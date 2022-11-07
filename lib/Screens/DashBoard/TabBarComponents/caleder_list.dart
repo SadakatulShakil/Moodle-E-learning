@@ -158,18 +158,62 @@ class InitState extends State<DashBoardCalederList> {
               ),
             ),
             Divider(),
-            Expanded(
-              child: Padding(
-                  padding:
-                  const EdgeInsets.only(left: 12.0, right: 12.0),
-                  child: ListView.builder(
-                      itemCount: eventList.length,
-                      itemBuilder: (context, index) {
-                        final mCourseData = eventList[index];
-
-                        return buildUpcomingEvent(mCourseData);
-                      })),
-            ),
+            Container(
+              margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 8),
+              padding: const EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black12)),
+              child: Row(
+                children: [
+                  Image.asset('assets/images/course_image.png',height: 30, width: 30,fit: BoxFit.cover,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Text(eventList[0].name.toString(),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: GoogleFonts.comfortaa(
+                                    color: Colors.black,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Text( DateFormat.yMMMEd().format(DateTime.parse(
+                              getDateStump(eventList[0]
+                                  .timestart
+                                  .toString()))),
+                              style: GoogleFonts.comfortaa(
+                                  color: Colors.black54,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+            // Expanded(
+            //   child: Padding(
+            //       padding:
+            //       const EdgeInsets.only(left: 12.0, right: 12.0),
+            //       child: ListView.builder(
+            //           itemCount: eventList.length,
+            //           itemBuilder: (context, index) {
+            //             final mCourseData = eventList[0];
+            //
+            //             return buildUpcomingEvent(mCourseData);
+            //           })),
+            // ),
           ],
         ),
     );

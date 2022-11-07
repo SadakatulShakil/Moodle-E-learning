@@ -441,9 +441,19 @@ class InitState extends State<CourseDetailsPage> {
                                     courseContentList[sub_index]
                                         .modules[index]
                                         .modname ==
-                                        "quiz"?Navigator.push(context, MaterialPageRoute(builder: (context) => QuizViewPage(courseContentList[sub_index].modules[index].name.toString(), courseContentList[sub_index]
+                                        "quiz"?Navigator.push(context, MaterialPageRoute(builder: (context) => QuizViewPage(courseContentList[sub_index].modules[index].name.toString(), courseContentList[sub_index].modules[index].instance.toString()))):courseContentList[sub_index]
                                         .modules[index]
-                                        .instance.toString()))):print("Not assignment clicked !");
+                                        .modname ==
+                                        "assign"?Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => AssignmentDetailsPage(
+                                                widget.mCourseData.id.toString(),
+                                                courseContentList[sub_index].modules[index].name.toString(),
+                                                courseContentList[sub_index].modules[index].instance.toString(),
+                                                DateFormat.yMMMEd().format(DateTime.parse(getDateStump(courseContentList[sub_index].modules[index].dates[0].timestamp.toString()))),
+                                                DateFormat.yMMMEd().format(DateTime.parse(getDateStump(courseContentList[sub_index].modules[index].dates[1].timestamp.toString())))
+                                            ))):print("Not assignment clicked !");
                                   },
                                   child: Container(
                                       child: Padding(
