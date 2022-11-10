@@ -6,6 +6,7 @@ import 'package:radda_moodle_learning/ApiModel/gradeDetailsResponse.dart';
 import 'package:radda_moodle_learning/ApiModel/quiz_attempt_summery.dart';
 import 'package:radda_moodle_learning/ApiModel/quiz_question_response.dart';
 import 'package:radda_moodle_learning/ApiModel/start_quiz_attempt_response.dart';
+import '../ApiModel/allChatsHolderResponse.dart';
 import '../ApiModel/assignmentResponse.dart';
 import '../ApiModel/categoryResponse.dart';
 import '../ApiModel/courseContentResponse.dart';
@@ -374,6 +375,23 @@ class NetworkCall {
       return null;
     }
   }
+  Future<AllChatsHolderResponse?> ChatHolderListCall(String token, String userId) async {
+    String fullUrl = baseUrl+'/webservice/rest/server.php?wsfunction=core_message_get_conversations&moodlewsrestformat=json&wstoken=$token&userid=$userId';
+
+    final chatHolderListData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("chatHolderListReponsee_URL = " + fullUrl);
+    print("chatHolderListReponseeData = " + chatHolderListData.body);
+    if (chatHolderListData.statusCode == 200) {
+      return AllChatsHolderResponse.fromJson(jsonDecode(chatHolderListData.body));
+    } else {
+      return null;
+    }
+  }
+
 
 
 }

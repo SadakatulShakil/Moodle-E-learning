@@ -23,6 +23,8 @@ class InitState extends State<DashBoardCalederList> {
 
   String token = '';
   String userId = '';
+  String firstUpcomingEvent = '';
+  String firstUpcomingEventDate = '';
   Map<String, dynamic> dateList = {};
   List<upComing.Events> eventList = [];
   List<monthly.Weeks> weekList = [];
@@ -176,7 +178,7 @@ class InitState extends State<DashBoardCalederList> {
                           width: MediaQuery.of(context).size.width / 2,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 5.0),
-                            child: Text(eventList[0].name.toString(),
+                            child: Text(eventList.length>0?firstUpcomingEvent:"",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: GoogleFonts.comfortaa(
@@ -187,10 +189,8 @@ class InitState extends State<DashBoardCalederList> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 5.0),
-                          child: Text( DateFormat.yMMMEd().format(DateTime.parse(
-                              getDateStump(eventList[0]
-                                  .timestart
-                                  .toString()))),
+                          child: Text(eventList.length>0?DateFormat.yMMMEd().format(DateTime.parse(
+                              getDateStump(firstUpcomingEventDate))):"",
                               style: GoogleFonts.comfortaa(
                                   color: Colors.black54,
                                   fontSize: 13,
@@ -236,6 +236,8 @@ class InitState extends State<DashBoardCalederList> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String message = 'Success';
       eventList = calenderEventsData.events!;
+      firstUpcomingEvent = eventList.first.name.toString();
+      firstUpcomingEventDate = eventList.first.timestart.toString();
       // for(int i = 0; i< calenderEventsData.events!.length;i++){
       //   var dateListIndex = DateTime.parse(getDateStump(calenderEventsData.events![i].timesort.toString())).toString();
       //   dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(calenderEventsData.events![i]) : dateList[dateListIndex] = [calenderEventsData.events![i]];
