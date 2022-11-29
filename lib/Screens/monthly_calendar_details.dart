@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:radda_moodle_learning/Screens/create_calendar_event.dart';
 
+import '../Helper/colors_class.dart';
+
 class MonthlyCalenderDetailsPage extends StatefulWidget {
   List<dynamic> eventsList;
   MonthlyCalenderDetailsPage(this.eventsList);
@@ -20,14 +22,8 @@ class InitState extends State<MonthlyCalenderDetailsPage> {
 
   Widget initWidget(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCalenderEventPage()));
-      },
-          label: Text('Create Event')
-      ),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -40,7 +36,7 @@ class InitState extends State<MonthlyCalenderDetailsPage> {
                 fontSize: 18)),
         centerTitle: false,
       ),
-      backgroundColor: const Color(0xFF0E0E95),
+      backgroundColor: PrimaryColor,
       body: SafeArea(
         child: Column(
           children: <Widget>[

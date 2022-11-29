@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:getwidget/components/badge/gf_badge.dart';
+import 'package:getwidget/components/badge/gf_button_badge.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:radda_moodle_learning/ApiModel/allChatsHolderResponse.dart';
-import 'package:radda_moodle_learning/Helper/CustomScaffold.dart';
-import 'package:radda_moodle_learning/Screens/category_details_page.dart';
+import 'package:radda_moodle_learning/Screens/Profile/other_user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ApiCall/HttpNetworkCall.dart';
+import '../../Helper/colors_class.dart';
 
 class ContactComponents extends StatefulWidget {
   List<Conversations> chatHolderList;
-  ContactComponents(this.chatHolderList);
+  List<dynamic> contactRequestList;
+  String userid;
+  ContactComponents(this.chatHolderList, this.contactRequestList, this.userid);
 
   @override
   State<StatefulWidget> createState() => InitState();
@@ -22,6 +25,7 @@ class InitState extends State<ContactComponents> {
   List<dynamic> subCategoryList = [];
   String token = '';
   double value = 0;
+  int fieldVisible = 1;
   NetworkCall networkCall = NetworkCall();
 
   @override
@@ -44,7 +48,7 @@ class InitState extends State<ContactComponents> {
       transform: Matrix4.translationValues(0, 5, 1),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0E0E95),
+          backgroundColor: PrimaryColor,
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -57,7 +61,7 @@ class InitState extends State<ContactComponents> {
                   fontSize: 18)),
           centerTitle: false,
         ),
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         body: Column(
           children: <Widget>[
             Container(
@@ -85,34 +89,48 @@ class InitState extends State<ContactComponents> {
                             topRight: Radius.circular(25))),
                     child: Column(
                       children: [
-                        SizedBox(height: 8,),
+                        SizedBox(
+                          height: 12,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Container(
-                              margin: EdgeInsets.all(5.0),
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFE7EAEC),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child:  Text('Your contacts', textAlign: TextAlign.center,style: GoogleFonts.comfortaa(
-                                  color: const Color(0xFF01A9B8)) ),
-                            ),
+                              child: GFButtonBadge(
+                                color: fieldVisible == 1?PrimaryColor:Color(0xFFE7EAEC),
+                                onPressed: () {
+                                  fieldVisible = 1;
+                                  setState(() {
+
+                                  });
+                                },
+                                text: 'My contacts',textStyle: GoogleFonts.comfortaa(
+                                  color: fieldVisible == 1?Colors.white:PrimaryColor),
+                                icon: GFBadge(
+                                  child: Text(widget.chatHolderList.length.toString()),
+                                ),
+                              ),),
                             Container(
-                              margin: EdgeInsets.all(5.0),
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFE7EAEC),
-                                borderRadius: BorderRadius.circular(10),
+                              child: GFButtonBadge(
+                                color: fieldVisible == 2?PrimaryColor:Color(0xFFE7EAEC),
+                                onPressed: () {
+                                  fieldVisible = 2;
+                                  setState(() {
+
+                                  });
+                                },
+                                text: 'Request',textStyle: GoogleFonts.comfortaa(
+                                  color: fieldVisible == 2?Colors.white:PrimaryColor),
+                                icon: GFBadge(
+                                  child: Text(widget.contactRequestList.length.toString()),
+                                ),
                               ),
-                              child:  Text('Requests', textAlign: TextAlign.center,style: GoogleFonts.comfortaa(
-                                  color: const Color(0xFF01A9B8)) ),
                             ),
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 18.0, top: 8, right: 18),
+                          padding: const EdgeInsets.only(
+                              left: 18.0, top: 15, right: 18),
                           child: SizedBox(
                             height: 40,
                             child: TextField(
@@ -122,7 +140,10 @@ class InitState extends State<ContactComponents> {
                               minLines: 1,
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.search, color: Colors.blueAccent,),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: SecondaryColor,
+                                ),
                                 contentPadding: EdgeInsets.all(8),
                                 hintText: 'search',
                                 hintStyle: TextStyle(fontSize: 16),
@@ -142,18 +163,38 @@ class InitState extends State<ContactComponents> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  Expanded(
-                    child: Padding(
-                        padding:
-                        const EdgeInsets.only(left: 12.0, right: 12.0),
-                        child: ListView.builder(
-                            itemCount: widget.chatHolderList.length,
-                            itemBuilder: (context, index) {
-                              final mChatData = widget.chatHolderList[index];
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Visibility(
+                    visible: fieldVisible == 1 ? true : false,
+                    child: Expanded(
+                      child: Padding(
+                          padding:
+                          const EdgeInsets.only(left: 12.0, right: 12.0),
+                          child: ListView.builder(
+                              itemCount: widget.chatHolderList.length,
+                              itemBuilder: (context, index) {
+                                final mChatData = widget.chatHolderList[index];
 
-                              return buildChatHolderList(mChatData);
-                            })),
+                                return buildChatHolderList(mChatData);
+                              })),
+                    ),
+                  ),
+                  Visibility(
+                    visible: fieldVisible == 2 ? true : false,
+                    child: Expanded(
+                      child: Padding(
+                          padding:
+                          const EdgeInsets.only(left: 12.0, right: 12.0),
+                          child: ListView.builder(
+                              itemCount: widget.contactRequestList.length,
+                              itemBuilder: (context, index) {
+                                final mContactData = widget.contactRequestList[index];
+
+                                return buildContactList(mContactData);
+                              })),
+                    ),
                   ),
                 ],
               ),
@@ -163,12 +204,13 @@ class InitState extends State<ContactComponents> {
       ),
     );
   }
-  void getSharedData() async{
+
+  void getSharedData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('TOKEN')!;
-    setState(() {
-    });
+    setState(() {});
   }
+
   void showToastMessage(String message) {
     Fluttertoast.showToast(
         msg: message,
@@ -189,10 +231,17 @@ class InitState extends State<ContactComponents> {
         //         builder: (context) => CourseDetailsPage(mCourseData)));
       },
       child: Visibility(
-        visible: mChatData.subname !=null?mChatData.members.length>0?mChatData.members.first.iscontact?true:false:false:false,
+        visible: mChatData.subname != null
+            ? mChatData.members.length > 0
+            ? mChatData.members.first.iscontact
+            ? true
+            : false
+            : false
+            : false,
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Container(
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
@@ -206,7 +255,8 @@ class InitState extends State<ContactComponents> {
                   children: [
                     FadeInImage.assetNetwork(
                         placeholder: 'assets/images/chat_head.jpg',
-                        image:  'https://www.pngkit.com/png/full/44-443934_post-navigation-people-icon-grey.png',
+                        image:
+                        'https://www.pngkit.com/png/full/44-443934_post-navigation-people-icon-grey.png',
                         height: 40,
                         width: 40,
                         fit: BoxFit.cover),
@@ -223,20 +273,32 @@ class InitState extends State<ContactComponents> {
                             width: MediaQuery.of(context).size.width / 1.5,
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 5.0),
-                              child: Text(mChatData.members.length>0?mChatData.members.first.fullname.toString():'Not found',
+                              child: Text(
+                                  mChatData.members.length > 0
+                                      ? mChatData.members.first.fullname
+                                      .toString()
+                                      : 'Not found',
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.comfortaa(
-                                      color: mChatData.isread?Colors.black:Colors.blueAccent,
+                                      color: mChatData.isread
+                                          ? Colors.black
+                                          : SecondaryColor,
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          Icon(Icons.more_vert, color: Colors.black,)
+                          Visibility(
+                            visible: false,
+                            child: Icon(
+                              Icons.more_vert,
+                              color: Colors.black,
+                            ),
+                          )
                         ],
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width / 2,
-                        child: Text( mChatData.subname.toString(),
+                        child: Text(mChatData.subname.toString(),
                             style: GoogleFonts.comfortaa(
                                 color: Colors.black54,
                                 fontSize: 13,
@@ -249,7 +311,251 @@ class InitState extends State<ContactComponents> {
             ),
           ),
         ),
-      )
-  );
+      ));
 
+  Widget buildContactList(mContactData) => GestureDetector(
+      onTap: () {
+        /// do click item task
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => CourseDetailsPage(mCourseData)));
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(5.0),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.black12)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/chat_head.jpg',
+                      image: mContactData.profileimageurl.toString(),
+                      height: 40,
+                      width: 40,
+                      fit: BoxFit.cover),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Text(
+                                mContactData.fullname.toString(),
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.comfortaa(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){
+                            OpenDialog(context, mContactData);
+                          },
+                          child: Icon(
+                            Icons.more_vert,
+                            color: Colors.black,
+                          ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      child: Text('e-Learning',
+                          style: GoogleFonts.comfortaa(
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ));
+
+  void OpenDialog(BuildContext context, mContactData) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            insetPadding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(child: Align(
+                    alignment: Alignment.center,
+                    child: Text('Request',style: GoogleFonts.comfortaa(
+                        fontSize: 18
+                    )),
+                  )),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context, false);
+                          },
+                          child: Icon(Icons.cancel_outlined))),
+                ]),
+
+            content: Container(
+              height: MediaQuery.of(context).size.height/6,
+              width: MediaQuery.of(context).size.width/6,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Image.network(mContactData.profileimageurl.toString(),height: 60, width: 60,),
+                      SizedBox(width: 8,),
+                      Column(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width/2.5,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(mContactData.fullname.toString(),textAlign: TextAlign.center,
+                                  style: GoogleFonts.comfortaa(
+                                      fontWeight: FontWeight.w900, fontSize: 12)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 18.0, right: 18),
+                    child: Divider(
+                      thickness: 2,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: (){
+                        Navigator.pop(context, false);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => OtherProfileBody('contact', widget.userid, mContactData.id.toString())));
+                        // setState(() {
+                        //
+                        // });
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.only(top: 5.0, bottom: 5.0,),
+                        padding: EdgeInsets.only(left: 8.0,  top: 8.0, bottom: 8.0),
+                        decoration: BoxDecoration(
+                          color: AccentColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 2,
+                              // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child:  Align(
+                          alignment: Alignment.center,
+                          child: Text('View profile', textAlign: TextAlign.center,style: GoogleFonts.comfortaa(
+                            color: const Color(0xFFFFFFFF),
+                            fontWeight: FontWeight.bold,) ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              Row(
+                children: [
+                  InkWell(
+                    onTap: (){
+                      Navigator.pop(context, false);
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                      // setState(() {
+                      //
+                      // });
+                    },
+                    child: Container(
+                      width: 150,
+                      margin: EdgeInsets.only(top: 5.0, bottom: 5.0,),
+                      padding: EdgeInsets.only(left: 8.0,  top: 8.0, bottom: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child:  Align(
+                        alignment: Alignment.center,
+                        child: Text('Cancel', textAlign: TextAlign.center,style: GoogleFonts.comfortaa(
+                          color: const Color(0xFFFFFFFF),) ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8,),
+                  InkWell(
+                    onTap: (){
+                      Navigator.pop(context, false);
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                      // setState(() {
+                      //
+                      // });
+                    },
+                    child: Container(
+                      width: 150,
+                      margin: EdgeInsets.only(top: 5.0, bottom: 5.0,),
+                      padding: EdgeInsets.only(left: 8.0,  top: 8.0, bottom: 8.0),
+                      decoration: BoxDecoration(
+                        color: PrimaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child:  Align(
+                        alignment: Alignment.center,
+                        child: Text('Accept', textAlign: TextAlign.center,style: GoogleFonts.comfortaa(
+                          color: const Color(0xFFFFFFFF),
+                          fontWeight: FontWeight.bold,) ),
+                      ),
+                    ),
+                  )
+
+                ],
+              )
+            ],
+          );
+        });
+  }
 }

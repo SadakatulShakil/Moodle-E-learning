@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../Helper/colors_class.dart';
+
 class AllCoursesPage extends StatefulWidget {
   List<dynamic> allCourseList;
   AllCoursesPage(this.allCourseList);
@@ -20,7 +22,7 @@ class InitState extends State<AllCoursesPage> {
   Widget initWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -33,7 +35,7 @@ class InitState extends State<AllCoursesPage> {
                 fontSize: 18)),
         centerTitle: false,
       ),
-      backgroundColor: const Color(0xFF0E0E95),
+      backgroundColor: PrimaryColor,
       body: Column(
         children: <Widget>[
           Container(
@@ -51,7 +53,8 @@ class InitState extends State<AllCoursesPage> {
                 children: [
                   SizedBox(height: 15,),
                   Expanded(
-                    child: Padding(
+                    child:
+                    Padding(
                         padding:
                         const EdgeInsets.only(left: 12.0, right: 12.0),
                         child: ListView.builder(
@@ -133,7 +136,7 @@ class InitState extends State<AllCoursesPage> {
                             ' % complete'
                             : '0 % complete',
                         style: GoogleFonts.comfortaa(
-                            color: Colors.blueAccent,
+                            color: SecondaryColor,
                             fontSize: 13,
                             fontWeight: FontWeight.bold)),
                   ),

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:radda_moodle_learning/Screens/category_wise_course.dart';
 
 import '../ApiCall/HttpNetworkCall.dart';
+import '../Helper/colors_class.dart';
 
 class CategoryDetailsPage extends StatefulWidget {
   String name;
@@ -42,7 +43,7 @@ class InitState extends State<CategoryDetailsPage> {
       transform: Matrix4.translationValues(0, 5, 1),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0E0E95),
+          backgroundColor: PrimaryColor,
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -55,7 +56,7 @@ class InitState extends State<CategoryDetailsPage> {
                   fontSize: 18)),
           centerTitle: false,
         ),
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         body: Column(
           children: <Widget>[
             Container(
@@ -105,7 +106,7 @@ class InitState extends State<CategoryDetailsPage> {
                   Align(alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 15.0,right: 15, top: 8, bottom: 8),
-                      child: Text('Our Papers', style: TextStyle(color: Colors.blueAccent, fontSize: 18, fontWeight: FontWeight.bold),),
+                      child: Text('Our Papers', style: TextStyle(color: SecondaryColor, fontSize: 18, fontWeight: FontWeight.bold),),
                     ),
                   ),
                   SizedBox(height: 12,),
@@ -244,14 +245,14 @@ class InitState extends State<CategoryDetailsPage> {
                           child:  Wrap(
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
-                                const Icon(Icons.library_add_rounded,
-                                  color: Color(0xFF18D77E),
+                                const Icon(Icons.menu_book,
+                                  color: PrimaryColor,
                                   size: 17,),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
                                     mCategoryData.coursecount.toString()+' courses', style: GoogleFonts.comfortaa(
-                                    color: const Color(0xFF18D77E),
+                                    color: PrimaryColor,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w900,
                                   ),

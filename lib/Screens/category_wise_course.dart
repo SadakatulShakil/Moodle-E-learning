@@ -6,12 +6,14 @@ import 'package:radda_moodle_learning/Screens/courseDetailsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ApiCall/HttpNetworkCall.dart';
+import '../Helper/colors_class.dart';
+import '../Helper/operations.dart';
 
 class CategoryWiseCoursesPage extends StatefulWidget {
   String catId;
+
   CategoryWiseCoursesPage(this.catId);
 
-  
   @override
   State<StatefulWidget> createState() => InitState();
 }
@@ -20,6 +22,7 @@ class InitState extends State<CategoryWiseCoursesPage> {
   NetworkCall networkCall = NetworkCall();
   List<dynamic> courseList = [];
   List<dynamic> categoryWiseCourseList = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -28,7 +31,7 @@ class InitState extends State<CategoryWiseCoursesPage> {
       getSharedData();
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return initWidget(context);
@@ -37,7 +40,7 @@ class InitState extends State<CategoryWiseCoursesPage> {
   Widget initWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -50,38 +53,56 @@ class InitState extends State<CategoryWiseCoursesPage> {
                 fontSize: 18)),
         centerTitle: false,
       ),
-      backgroundColor: const Color(0xFF0E0E95),
+      backgroundColor: PrimaryColor,
       body: Column(
         children: <Widget>[
           Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height-MediaQuery.of(context).size.height/9,
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).size.height / 9,
               transform: Matrix4.translationValues(0, 10, 1),
               decoration: BoxDecoration(
                   color: Color(0xFFFAFAFA),
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25)
-                  )
-              ),
+                      topRight: Radius.circular(25))),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 15,),
-                  Expanded(
+                  SizedBox(
+                    height: 15,
+                  ),
+                  categoryWiseCourseList.length > 0
+                      ? Expanded(
                     child: Padding(
-                        padding:
-                        const EdgeInsets.only(left: 12.0, right: 12.0),
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0),
                         child: ListView.builder(
                             itemCount: categoryWiseCourseList.length,
                             itemBuilder: (context, index) {
-                              final mCourseData = categoryWiseCourseList[index];
+                              final mCourseData =
+                              categoryWiseCourseList[index];
 
                               return buildRecentCourse(mCourseData);
                             })),
+                  )
+                      : Center(
+                    child: SizedBox(
+                      height: 100,
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.warning_amber,
+                            size: 30,
+                          ),
+                          Text('No Data Found!'),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-              )
-          ),
+              )),
         ],
       ),
     );
@@ -90,13 +111,16 @@ class InitState extends State<CategoryWiseCoursesPage> {
   Widget buildRecentCourse(mCourseData) => GestureDetector(
       onTap: () {
         /// do click item task
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CourseDetailsPage('site', mCourseData)));
         // Navigator.push(
         //     context,
         //     MaterialPageRoute(
         //         builder: (context) => CoursesDetailsPage(mCourseData)));
       },
-      child:
-      Container(
+      child: Container(
         margin: const EdgeInsets.only(left: 8.0, right: 8, top: 5, bottom: 8),
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
@@ -120,7 +144,7 @@ class InitState extends State<CategoryWiseCoursesPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width / 2,
+                    width: MediaQuery.of(context).size.width / 2.2,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 5.0),
                       child: Text(mCourseData.displayname.toString(),
@@ -134,71 +158,63 @@ class InitState extends State<CategoryWiseCoursesPage> {
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Row(children: [
-
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Wrap(
-                              crossAxisAlignment:
-                              WrapCrossAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.account_circle_sharp,
-                                  size: 17,
-                                ),
-                                Padding(
-                                  padding:
-                                  const EdgeInsets.only(
-                                      left: 8.0),
-                                  child: Text(
-                                    mCourseData
-                                        .enrolledusercount
-                                        .toString() +
-                                        ' users',
-                                    style:
-                                    GoogleFonts.comfortaa(
-                                      fontSize: 12,
-                                      fontWeight:
-                                      FontWeight.w900,
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.account_circle_sharp,
+                                    size: 17,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      mCourseData.enrolledusercount.toString() +
+                                          ' users',
+                                      style: GoogleFonts.comfortaa(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ]),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CourseDetailsPage(mCourseData)));
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Container(
-                            width:100,
-                            height: 30,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: const Color(0xFFFFFFFF)
-                            ),
-                            child: Center(
-                              child: Text("View details", style: GoogleFonts.comfortaa(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),),
-                            ),
+                                ]),
                           ),
                         ),
-                      ),
-                    ],),
+                        // Card(
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(8),
+                        //   ),
+                        //   child: Container(
+                        //     width: 100,
+                        //     height: 30,
+                        //     decoration: BoxDecoration(
+                        //         borderRadius: BorderRadius.circular(8),
+                        //         color: const Color(0xFFFFFFFF)),
+                        //     child: Center(
+                        //       child: Text(
+                        //         "View details",
+                        //         style: GoogleFonts.comfortaa(
+                        //             color: Colors.black,
+                        //             fontWeight: FontWeight.bold,
+                        //             fontSize: 12),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
+                    ),
                   )
-
                 ],
               ),
             )
           ],
         ),
-      )
-  );
+      ));
 
   String getDateStump(String sTime) {
     int timeNumber = int.parse(sTime);
@@ -213,19 +229,23 @@ class InitState extends State<CategoryWiseCoursesPage> {
       getAllCourses(token, userid);
     });
   }
+
   void getAllCourses(String token, String userId) async {
-    //CommonOperation.showProgressDialog(context, "loading", true);
+    CommonOperation.showProgressDialog(context, "loading", true);
     final userCoursesData =
     await networkCall.UserCoursesListCall(token, userId);
     if (userCoursesData != null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String message = 'Success2';
       courseList = userCoursesData;
-      categoryWiseCourseList = courseList.where((element) => element.category.toString()==widget.catId.toString()).toList();
+      categoryWiseCourseList = courseList
+          .where((element) =>
+      element.category.toString() == widget.catId.toString())
+          .toList();
       //count = courseList.length.toString();
       print('data_count1 ' + courseList.first.toString());
-      showToastMessage(message);
-      //CommonOperation.hideProgressDialog(context);
+      //showToastMessage(message);
+      CommonOperation.hideProgressDialog(context);
       setState(() {});
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -233,6 +253,7 @@ class InitState extends State<CategoryWiseCoursesPage> {
       showToastMessage('your session is expire ');
     }
   }
+
   void showToastMessage(String message) {
     Fluttertoast.showToast(
         msg: message,
@@ -243,6 +264,4 @@ class InitState extends State<CategoryWiseCoursesPage> {
         fontSize: 16.0 //message font size
     );
   }
-  
-  
 }

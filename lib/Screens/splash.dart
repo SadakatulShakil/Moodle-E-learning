@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:radda_moodle_learning/Helper/colors_class.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_screen.dart';
@@ -39,13 +40,13 @@ class _SplashState extends State<Splash> {
     }
   }
 
- loginPageRoute(){
+  loginPageRoute(){
     // Navigator.pushReplacement(context, MaterialPageRoute(
     //     builder: (context) => LoginScreen()
     // ));
-   Navigator.pushReplacement(context, MaterialPageRoute(
-       builder: (context) => LoginScreen()
-   ));
+    Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (context) => LoginScreen()
+    ));
   }
   homePageRoute(){
     Navigator.pushReplacement(context, MaterialPageRoute(
@@ -59,7 +60,7 @@ class _SplashState extends State<Splash> {
 
   Widget initWidget() {
     return Scaffold(
-      backgroundColor: Color(0xFF0E0E95),
+      backgroundColor: PrimaryColor,
       body: Stack(
         children: [
           Center(
@@ -90,7 +91,7 @@ class _SplashState extends State<Splash> {
               children: [
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: Text('কারিগরি সহায়তায় adn diginet', style: GoogleFonts.comfortaa(color: const Color(0xFFFFFFFF))),
+                  child: Text('Technical support from ADN Diginet', style: GoogleFonts.comfortaa(color: const Color(0xFFFFFFFF))),
                 )
               ],
             ),

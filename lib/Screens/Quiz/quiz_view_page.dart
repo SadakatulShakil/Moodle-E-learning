@@ -8,6 +8,7 @@ import 'package:radda_moodle_learning/Screens/category_wise_course.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ApiCall/HttpNetworkCall.dart';
+import '../../Helper/colors_class.dart';
 import '../../Helper/operations.dart';
 
 class QuizViewPage extends StatefulWidget {
@@ -51,7 +52,7 @@ class InitState extends State<QuizViewPage> {
       transform: Matrix4.translationValues(0, 5, 1),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0E0E95),
+          backgroundColor: PrimaryColor,
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -64,7 +65,7 @@ class InitState extends State<QuizViewPage> {
                   fontSize: 18)),
           centerTitle: false,
         ),
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         body: Column(
           children: <Widget>[
             Container(
@@ -115,92 +116,92 @@ class InitState extends State<QuizViewPage> {
                       ),
                     ),
                   ),
-                Expanded(
-                    child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Align(alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
-                          child: Text('Time limit: 10 minutes', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15),
-                        child: Divider(thickness: 1,),
-                      ),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
-                          child: Text('Grading method: Highest grade', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15),
-                        child: Divider(thickness: 1,),
-                      ),
+                  Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Align(alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
+                                child: Text('Time limit: 10 minutes', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0, right: 15),
+                              child: Divider(thickness: 1,),
+                            ),
+                            Align(alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
+                                child: Text('Grading method: Highest grade', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0, right: 15),
+                              child: Divider(thickness: 1,),
+                            ),
 
-                      Align(alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
-                          child: Text('Highest grade: '+ highestGrade, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15),
-                        child: Divider(thickness: 1,),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        color: Color(0XFF009AF1),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 15.0,right: 15, top: 12, bottom:12),
-                          child: Text('Summery of previous attempt', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SingleChildScrollView(
-                          child: DataTable(
-                            columns: [
-                              DataColumn(label: Text('Attempt')),
-                              DataColumn(label: Text('Status')),
-                              DataColumn(label: Text('Grade')),
-                              DataColumn(label: Text('Review')),
-                            ],
-                            rows: _createRows(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-                      InkWell(
-                        onTap: (){
-                          quizDialog();
-                          //callLoginApi(userNameController.text, passwordController.text);
-                          //agree?Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen())): showToastMessage('please accept our terms & condition');
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Container(
-                            width:350,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: const Color(0xFF00BC78)
+                            Align(alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0,right: 15, top: 5, bottom: 5),
+                                child: Text('Highest grade: '+ highestGrade, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                              ),
                             ),
-                            child: Center(
-                              child: Text("Attempt now", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0, right: 15),
+                              child: Divider(thickness: 1,),
                             ),
-                          ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              color: Color(0XFF009AF1),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0,right: 15, top: 12, bottom:12),
+                                child: Text('Summery of previous attempt', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                              ),
+                            ),
+                            SizedBox(height: 8,),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: SingleChildScrollView(
+                                child: DataTable(
+                                  columns: [
+                                    DataColumn(label: Text('Attempt')),
+                                    DataColumn(label: Text('Status')),
+                                    DataColumn(label: Text('Grade')),
+                                    DataColumn(label: Text('Review')),
+                                  ],
+                                  rows: _createRows(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8,),
+                            InkWell(
+                              onTap: (){
+                                quizDialog();
+                                //callLoginApi(userNameController.text, passwordController.text);
+                                //agree?Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen())): showToastMessage('please accept our terms & condition');
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Container(
+                                  width:350,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: PrimaryColor
+                                  ),
+                                  child: Center(
+                                    child: Text("Attempt now", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8,),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 8,),
-                    ],
-                  ),
-                ))
+                      ))
                 ],
               ),
             ),
@@ -215,7 +216,7 @@ class InitState extends State<QuizViewPage> {
       DataCell(Text(item.attempt.toString())),
       DataCell(Text(item.state.toString())),
       DataCell(Text(item.sumgrades.toString())),
-      DataCell(Text('Review', style: TextStyle(color: Colors.blueAccent),))
+      DataCell(Text('Review', style: TextStyle(color: SecondaryColor),))
     ]))
         .toList();
   }
@@ -227,38 +228,38 @@ class InitState extends State<QuizViewPage> {
             title: Text('Start Attempt'),
             content: Container(
               height: MediaQuery.of(context).size.height/3,
-             child: Column(
-               children: [
-                 Text('Your attempt will have a time limit of 10 mins. When you start, t'
-                     'he timer will begin to count down and cannot be paused. '
-                     'You must finish your attempt before it expires. Are you sure you wish to start now? '),
+              child: Column(
+                children: [
+                  Text('Your attempt will have a time limit of 10 mins. When you start, t'
+                      'he timer will begin to count down and cannot be paused. '
+                      'You must finish your attempt before it expires. Are you sure you wish to start now? '),
 
 
-                 SizedBox(height: 20,),
-                 InkWell(
-                   onTap: (){
-                     Navigator.pop(context);
-                     callAttemptApi(token, widget.quizId);
-                   },
-                   child: Container(
-                     width: MediaQuery.of(context).size.width,
-                     color: const Color(0xFF00BC78),
-                       child: Padding(
-                         padding: const EdgeInsets.all(8.0),
-                         child: Align(
-                           alignment: Alignment.center,
-                             child: Text('Start Attempt', style: TextStyle(color: Colors.white),)),
-                       )),
-                 ),
-                 SizedBox(height: 10,),
-                 InkWell(
-                     onTap: (){
-                       Navigator.pop(context);
-                       //callAttemptApi(token, widget.quizId);
-                     },
-                     child: Text('Cancel')),
-               ],
-             ),
+                  SizedBox(height: 20,),
+                  InkWell(
+                    onTap: (){
+                      Navigator.pop(context);
+                      callAttemptApi(token, widget.quizId);
+                    },
+                    child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        color: PrimaryColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text('Start Attempt', style: TextStyle(color: Colors.white),)),
+                        )),
+                  ),
+                  SizedBox(height: 10,),
+                  InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                        //callAttemptApi(token, widget.quizId);
+                      },
+                      child: Text('Cancel')),
+                ],
+              ),
             ),
           );
         });
@@ -284,7 +285,7 @@ class InitState extends State<QuizViewPage> {
 
 
       CommonOperation.hideProgressDialog(context);
-      showToastMessage(message);
+      //showToastMessage(message);
       setState(() {
         Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
       });
@@ -322,7 +323,7 @@ class InitState extends State<QuizViewPage> {
       }
 
       CommonOperation.hideProgressDialog(context);
-      showToastMessage(message);
+      //showToastMessage(message);
       setState(() {
         //Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
       });

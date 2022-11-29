@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../Helper/colors_class.dart';
+
 class UpcomingCalenderDetailsPage extends StatefulWidget {
   List<dynamic> upcomingList;
   UpcomingCalenderDetailsPage(this.upcomingList);
@@ -20,7 +22,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
   Widget initWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E95),
+        backgroundColor: PrimaryColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -33,7 +35,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                 fontSize: 18)),
         centerTitle: false,
       ),
-      backgroundColor: const Color(0xFF0E0E95),
+      backgroundColor: PrimaryColor,
       body: Column(
         children: <Widget>[
           Container(
@@ -113,7 +115,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
         margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 8),
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.black12)),
         child: Padding(
@@ -158,7 +160,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                 children: [
                   Align(
                     alignment: Alignment.topLeft,
-                    child: Icon(Icons.access_time, color: Colors.black54, size: 20,),
+                    child: Icon(Icons.menu_book, color: Colors.black54, size: 20,),
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width/1.3,
@@ -168,7 +170,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                         children: [
                           Flexible(
                             child: Text(
-                                mCourseData.course.shortname.toString(),
+                                mCourseData.description.toString() == ''?'no description':mCourseData.description.toString(),
                                 style: GoogleFonts.comfortaa(
                                     color: Colors.black54,
                                     fontSize: 18,

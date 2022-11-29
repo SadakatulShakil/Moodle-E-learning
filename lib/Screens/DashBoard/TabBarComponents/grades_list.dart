@@ -6,18 +6,22 @@ import 'package:radda_moodle_learning/ApiModel/gradeResponse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../ApiCall/HttpNetworkCall.dart';
+import '../../../Helper/colors_class.dart';
 import '../../../Helper/operations.dart';
 import '../../gradeDetailsPage.dart';
 
 class DashBoardGradesList extends StatefulWidget {
+  List<dynamic> courseList; List<Grades> gradeList;
+  DashBoardGradesList(this.courseList, this.gradeList);
+
   @override
   State<StatefulWidget> createState() => InitState();
 }
 
 class InitState extends State<DashBoardGradesList> {
   NetworkCall networkCall = NetworkCall();
-  List<dynamic> courseList = [];
-  List<Grades> gradeList = [];
+  // List<dynamic> courseList = [];
+  // List<Grades> gradeList = [];
 
   @override
   void initState() {
@@ -36,36 +40,36 @@ class InitState extends State<DashBoardGradesList> {
   Widget initWidget(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xFFF1F1FA),
-        body: gradeList.length > 0
+        body: widget.gradeList.length > 0
             ? Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                        child: ListView.builder(
-                            itemCount: courseList.length,
-                            itemBuilder: (context, index) {
-                              final mCourseData = courseList[index];
-                              final mGradeData = gradeList[index];
-                              return buildAllCourse(mCourseData, mGradeData);
-                            })),
-                  ),
-                ],
-              )
+          children: [
+            Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                  child: ListView.builder(
+                      itemCount: widget.courseList.length,
+                      itemBuilder: (context, index) {
+                        final mCourseData = widget.courseList[index];
+                        final mGradeData = widget.gradeList[index];
+                        return buildAllCourse(mCourseData, mGradeData);
+                      })),
+            ),
+          ],
+        )
             : Center(
-                child: SizedBox(
-                  height: 100,
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.warning_amber,
-                        size: 30,
-                      ),
-                      Text('Not Data Found!'),
-                    ],
-                  ),
+          child: SizedBox(
+            height: 100,
+            child: Column(
+              children: [
+                Icon(
+                  Icons.warning_amber,
+                  size: 30,
                 ),
-              ));
+                Text('No Data Found!'),
+              ],
+            ),
+          ),
+        ));
   }
 
   void getSharedData() async {
@@ -73,48 +77,48 @@ class InitState extends State<DashBoardGradesList> {
     String token = prefs.getString('TOKEN')!;
     String userid = prefs.getString('userId')!;
     setState(() {
-      getAllCourses(token, userid);
-      getCoursesGrade(token);
+      // getAllCourses(token, userid);
+      // getCoursesGrade(token);
     });
   }
 
-  void getAllCourses(String token, String userId) async {
-    CommonOperation.showProgressDialog(context, "loading", true);
-    final userCoursesData =
-        await networkCall.UserCoursesListCall(token, userId);
-    if (userCoursesData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success2';
-      courseList = userCoursesData;
-      //count = courseList.length.toString();
-      print('data_count1 ' + courseList.first.toString());
-      showToastMessage(message);
-      CommonOperation.hideProgressDialog(context);
-      setState(() {});
-    } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoged', false);
-      showToastMessage('your session is expire ');
-    }
-  }
-
-  void getCoursesGrade(String token) async {
-    CommonOperation.showProgressDialog(context, "loading", true);
-    final gradeListData = await networkCall.GradesCountCall(token);
-    if (gradeListData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success2';
-      showToastMessage(message);
-      CommonOperation.hideProgressDialog(context);
-      gradeList = gradeListData.grades!;
-      print('-----> ' + gradeList.first.courseid.toString());
-      setState(() {});
-    } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoged', false);
-      showToastMessage('your session is expire ');
-    }
-  }
+  // void getAllCourses(String token, String userId) async {
+  //   CommonOperation.showProgressDialog(context, "loading", true);
+  //   final userCoursesData =
+  //       await networkCall.UserCoursesListCall(token, userId);
+  //   if (userCoursesData != null) {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String message = 'Success2';
+  //     courseList = userCoursesData;
+  //     //count = courseList.length.toString();
+  //     print('data_count1 ' + courseList.first.toString());
+  //     //showToastMessage(message);
+  //     CommonOperation.hideProgressDialog(context);
+  //     setState(() {});
+  //   } else {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('isLoged', false);
+  //     showToastMessage('your session is expire ');
+  //   }
+  // }
+  //
+  // void getCoursesGrade(String token) async {
+  //   CommonOperation.showProgressDialog(context, "loading", true);
+  //   final gradeListData = await networkCall.GradesCountCall(token);
+  //   if (gradeListData != null) {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String message = 'Success2';
+  //     //showToastMessage(message);
+  //     CommonOperation.hideProgressDialog(context);
+  //     gradeList = gradeListData.grades!;
+  //     print('-----> ' + gradeList.first.courseid.toString());
+  //     setState(() {});
+  //   } else {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('isLoged', false);
+  //     showToastMessage('your session is expire ');
+  //   }
+  // }
 
   String getDateStump(String sTime) {
     int timeNumber = int.parse(sTime);
@@ -129,7 +133,7 @@ class InitState extends State<DashBoardGradesList> {
         timeInSecForIosWeb: 1,
         textColor: Colors.white,
         fontSize: 16.0 //message font size
-        );
+    );
   }
 
   Widget buildAllCourse(mCourseData, Grades mGradeData) => GestureDetector(
@@ -152,8 +156,8 @@ class InitState extends State<DashBoardGradesList> {
                 placeholder: 'assets/images/course_image.png',
                 image: mCourseData.overviewfiles.length != 0
                     ? mCourseData.overviewfiles.first.fileurl
-                        .replaceAll("/webservice", "")
-                        .toString()
+                    .replaceAll("/webservice", "")
+                    .toString()
                     : 'https://image.shutterstock.com/image-photo/online-courses-text-man-using-260nw-600126515.jpg',
                 height: 80,
                 width: 80,
@@ -192,19 +196,19 @@ class InitState extends State<DashBoardGradesList> {
                     child: Text(
                         mCourseData.progress != null
                             ? mCourseData.progress.ceil().toString() +
-                                ' % complete'
+                            ' % complete'
                             : '0 % complete',
                         style: GoogleFonts.comfortaa(
-                            color: Colors.blueAccent,
+                            color: SecondaryColor,
                             fontSize: 13,
                             fontWeight: FontWeight.bold)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text(
-                        mGradeData.grade.toString() != null
+                        mGradeData.grade.toString() != null && mGradeData.grade.toString() != '-'
                             ? 'Grade: ' + mGradeData.grade.toString()
-                            : 'Grade: ' + "-",
+                            : 'Grade: ' + "Not evaluated yet",
                         style: GoogleFonts.comfortaa(
                             color: Colors.black,
                             fontSize: 13,

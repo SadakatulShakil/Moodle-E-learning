@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:radda_moodle_learning/ApiModel/assignmentDetailsResponse.dart';
 import 'package:radda_moodle_learning/ApiModel/calendar_events_response.dart';
+import 'package:radda_moodle_learning/ApiModel/contact_request_response.dart';
 import 'package:radda_moodle_learning/ApiModel/gradeDetailsResponse.dart';
+import 'package:radda_moodle_learning/ApiModel/group_message_response.dart';
 import 'package:radda_moodle_learning/ApiModel/quiz_attempt_summery.dart';
 import 'package:radda_moodle_learning/ApiModel/quiz_question_response.dart';
 import 'package:radda_moodle_learning/ApiModel/start_quiz_attempt_response.dart';
 import '../ApiModel/allChatsHolderResponse.dart';
 import '../ApiModel/assignmentResponse.dart';
+import '../ApiModel/badges_response.dart';
 import '../ApiModel/categoryResponse.dart';
 import '../ApiModel/courseContentResponse.dart';
 import '../ApiModel/courseDetailsReponse.dart';
@@ -18,6 +21,7 @@ import '../ApiModel/notificationResponse.dart';
 import '../ApiModel/profileInfoResponse.dart';
 import '../ApiModel/profileResponse.dart';
 import '../ApiModel/recentCoursesResponse.dart';
+import '../ApiModel/search_response.dart';
 import '../ApiModel/userCoursesList.dart';
 import '../ApiModel/userDetailsResponse.dart';
 
@@ -392,6 +396,98 @@ class NetworkCall {
     }
   }
 
+  Future<List<dynamic>?> ContactRequestCall(String token ,String userId) async {
+    String fullUrl = baseUrl+'webservice/rest/server.php?wsfunction=core_message_get_contact_requests&moodlewsrestformat=json&wstoken=$token&userid=$userId';
+
+    final ContactRequestData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("ContactRequestDataReponsee_URL = " + fullUrl);
+    print("ContactRequestDataData = " + ContactRequestData.body);
+    if (ContactRequestData.statusCode == 200) {
+      final jsonresponse = jsonDecode(ContactRequestData.body);
+      //print("Courses------------>"+ jsonresponse['courses'].toString());
+      List<dynamic> contactRequestList = jsonresponse.map((element){
+        return ContactRequestResponse.fromJson(element);
+      }).toList();
+
+      return contactRequestList;
+    } else {
+      return null;
+    }
+  }
+
+  Future<GroupMessageResponse?> GroupMessageCall(String token , String userId, String convId) async {
+    String fullUrl = baseUrl+'/webservice/rest/server.php?wsfunction=core_message_get_conversation_messages&moodlewsrestformat=json&wstoken=$token&currentuserid=$userId&convid=$convId&newest=1';
+    final groupMessageResponseData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("groupMessageData_URL = " + fullUrl);
+    print("groupMessageData_URL = " + groupMessageResponseData.body);
+    if (groupMessageResponseData.statusCode == 200) {
+      return GroupMessageResponse.fromJson(jsonDecode(groupMessageResponseData.body));
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<dynamic>?> UserSearchCall(String token ,String searchText) async {
+    String fullUrl = baseUrl+'webservice/rest/server.php?wsfunction=core_message_search_contacts&moodlewsrestformat=json&wstoken=$token&searchtext=$searchText';
+
+    final userSearchData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("userSearchData_URL = " + fullUrl);
+    print("userSearchData = " + userSearchData.body);
+    if (userSearchData.statusCode == 200) {
+      final jsonresponse = jsonDecode(userSearchData.body);
+      //print("Courses------------>"+ jsonresponse['courses'].toString());
+      List<dynamic> userSearchList = jsonresponse.map((element){
+        return SearchUsersResponse.fromJson(element);
+      }).toList();
+
+      return userSearchList;
+    } else {
+      return null;
+    }
+  }
+  Future<BadgesResponse?> BadgesResponseCall(String token, String userId) async {
+    String fullUrl = baseUrl+'/webservice/rest/server.php?wsfunction=core_badges_get_user_badges&moodlewsrestformat=json&userid=$userId&wstoken=$token';
+    final userGradeResponseData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("BadgesResponse_URL = " + fullUrl);
+    print("BadgesResponseData = " + userGradeResponseData.body);
+    if (userGradeResponseData.statusCode == 200) {
+      return BadgesResponse.fromJson(jsonDecode(userGradeResponseData.body));
+    } else {
+      return null;
+    }
+  }
+
+  Future<dynamic> VideoUrlCall(String token, String url) async {
+    String fullUrl = '$url&token=$token';
+    final VideoUrlCallData = await http.get(Uri.parse(fullUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+      },);
+    print("BadgesResponse_URL = " + fullUrl);
+    print("BadgesResponseData = " + VideoUrlCallData.body);
+    if (VideoUrlCallData.statusCode == 200) {
+      return VideoUrlCallData.body;
+    } else {
+      return null;
+    }
+  }
 
 
 }

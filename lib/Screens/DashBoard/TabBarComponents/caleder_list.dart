@@ -12,25 +12,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../ApiCall/HttpNetworkCall.dart';
+import '../../../Helper/colors_class.dart';
 import '../../../Helper/operations.dart';
+import '../../create_calendar_event.dart';
 
 class DashBoardCalederList extends StatefulWidget{
+  String firstUpcomingEvent;
+  String firstUpcomingEventDate;
+  Map<String, dynamic> dateList;
+  List<upComing.Events> eventList;
+  DashBoardCalederList(this.firstUpcomingEvent, this.firstUpcomingEventDate, this.dateList, this.eventList);
+
 
   @override
   State<StatefulWidget> createState() => InitState();
 }
 class InitState extends State<DashBoardCalederList> {
-
+  NetworkCall networkCall = NetworkCall();
   String token = '';
   String userId = '';
-  String firstUpcomingEvent = '';
-  String firstUpcomingEventDate = '';
-  Map<String, dynamic> dateList = {};
-  List<upComing.Events> eventList = [];
-  List<monthly.Weeks> weekList = [];
-  List<monthly.Days> daysList = [];
-  List<monthly.Events> monthlyEventList = [];
-  NetworkCall networkCall = NetworkCall();
+  List<upComing.Events> eventsDataList = [];
+  // String firstUpcomingEvent = '';
+  // String firstUpcomingEventDate = '';
+  // Map<String, dynamic> dateList = {};
+  // List<upComing.Events> eventList = [];
+  // List<monthly.Weeks> weekList = [];
+  // List<monthly.Days> daysList = [];
+  // List<monthly.Events> monthlyEventList = [];
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   late PageController pageController;
@@ -52,8 +60,8 @@ class InitState extends State<DashBoardCalederList> {
   }
 
   List<dynamic> getEventsForDay(day){
-    // print(">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<"+dateList[day.toString().replaceAll("Z", "")].toString());
-    return dateList[day.toString().replaceAll("Z", "")] ?? [];
+    print(">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<"+widget.dateList[day.toString().replaceAll("Z", "")].toString());
+    return widget.dateList[day.toString().replaceAll("Z", "")] ?? [];
   }
 
   @override
@@ -65,7 +73,9 @@ class InitState extends State<DashBoardCalederList> {
     String headerText = DateFormat.MMMM().format(_focusedDay);
     print('Syear: '+ _focusedDay.year.toString()+'Smonth: '+ _focusedDay.month.toString());
     return Scaffold(
-        body: Column(
+      body: SingleChildScrollView(
+        physics: ScrollPhysics(),
+        child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,7 +96,18 @@ class InitState extends State<DashBoardCalederList> {
                     color: Colors.black,
                   ),
                 ),
-                Text(headerText, style: TextStyle(color: Colors.indigo, fontSize: 18, fontWeight: FontWeight.bold)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(headerText, style: TextStyle(color: PrimaryColor, fontSize: 15)),
+                    SizedBox(width: 8,),
+                    InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCalenderEventPage()));
+                        },
+                        child: Text('[Create Events]', style: TextStyle(color: PrimaryColor, fontSize: 18, fontWeight: FontWeight.bold))),
+                  ],
+                ),
                 IconButton(
                   onPressed: () {
                     pageController.nextPage(
@@ -121,18 +142,24 @@ class InitState extends State<DashBoardCalederList> {
                 onDaySelected: (selectedDay, focusedDay) {
                   if (!isSameDay(_selectedDay, selectedDay)) {
                     // Call `setState()` when updating the selected day
+                    eventsDataList.clear();
+                   for (int i =0; i<widget.eventList.length;i++){
+                     if(widget.eventList[i].timesort.toString() == getEventsForDay(selectedDay).first.toString()){
+                       eventsDataList.add(widget.eventList[i]);
+                     }
+                   }
                     setState(() {
                       _selectedDay = selectedDay;
                       _focusedDay = focusedDay;
-                      openDialog(getEventsForDay(selectedDay));
-                      print('output '+getEventsForDay(selectedDay).first.name.toString());
+                      openDialog(getEventsForDay(selectedDay), eventsDataList);
+
                     });
                   }
                 },
-                holidayPredicate: (day) {
-                  // Every 20th day of the month will be treated as a holiday
-                  return day.weekday == 5;
-                },
+                // holidayPredicate: (day) {
+                //   // Every 20th day of the month will be treated as a holiday
+                //   return day.weekday == 5;
+                // },
                 daysOfWeekVisible: true,
                 sixWeekMonthsEnforced: true,
                 shouldFillViewport: false,
@@ -142,80 +169,40 @@ class InitState extends State<DashBoardCalederList> {
               ),
             ),
             const SizedBox(height: 8.0),
-
             ///upcoming events list
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => UpcomingCalenderDetailsPage(eventList)));
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Upcoming Event', style: TextStyle(fontSize: 12)),
-                    Text('View all', style: TextStyle(color: Colors.blueAccent, fontSize: 12),),
-                  ],
+            Visibility(
+              visible: widget.eventList.length>0?true:false,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                child: InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpcomingCalenderDetailsPage(widget.eventList)));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Upcoming Event', style: TextStyle(fontSize: 12)),
+                      Text('View all', style: TextStyle(color: SecondaryColor, fontSize: 12),),
+                    ],
+                  ),
                 ),
               ),
             ),
             Divider(),
-            Container(
-              margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 8),
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.black12)),
-              child: Row(
-                children: [
-                  Image.asset('assets/images/course_image.png',height: 30, width: 30,fit: BoxFit.cover,),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: Text(eventList.length>0?firstUpcomingEvent:"",
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: GoogleFonts.comfortaa(
-                                    color: Colors.black,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 5.0),
-                          child: Text(eventList.length>0?DateFormat.yMMMEd().format(DateTime.parse(
-                              getDateStump(firstUpcomingEventDate))):"",
-                              style: GoogleFonts.comfortaa(
-                                  color: Colors.black54,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )
-            // Expanded(
-            //   child: Padding(
-            //       padding:
-            //       const EdgeInsets.only(left: 12.0, right: 12.0),
-            //       child: ListView.builder(
-            //           itemCount: eventList.length,
-            //           itemBuilder: (context, index) {
-            //             final mCourseData = eventList[0];
-            //
-            //             return buildUpcomingEvent(mCourseData);
-            //           })),
-            // ),
+            Padding(
+                padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.eventList.length,
+                    itemBuilder: (context, index) {
+                      final mCourseData = widget.eventList[index];
+
+                      return buildUpcomingEvent(mCourseData);
+                    })),
           ],
         ),
+      ),
     );
   }
   void getSharedData() async {
@@ -223,41 +210,10 @@ class InitState extends State<DashBoardCalederList> {
     token = prefs.getString('TOKEN')!;
     userId = prefs.getString('userId')!;
     setState(() {
-      getEventsData(token);
+      //getEventsData(token);
       //getGradeContent(token, widget.mGradeData.id.toString(), userId);
     });
   }
-
-  void getEventsData(String token) async{
-    CommonOperation.showProgressDialog(context, "loading", true);
-    final calenderEventsData =
-    await networkCall.CalendarEventsCall(token);
-    if (calenderEventsData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-      eventList = calenderEventsData.events!;
-      firstUpcomingEvent = eventList.first.name.toString();
-      firstUpcomingEventDate = eventList.first.timestart.toString();
-      // for(int i = 0; i< calenderEventsData.events!.length;i++){
-      //   var dateListIndex = DateTime.parse(getDateStump(calenderEventsData.events![i].timesort.toString())).toString();
-      //   dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(calenderEventsData.events![i]) : dateList[dateListIndex] = [calenderEventsData.events![i]];
-      //
-      // }
-      print('date list '+ dateList.toString());
-      CommonOperation.hideProgressDialog(context);
-      showToastMessage(message);
-      setState(() {
-        getMonthlyEventsData(token, _focusedDay.year.toString(),_focusedDay.month.toString());
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
-      });
-    } else {
-      CommonOperation.hideProgressDialog(context);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoged', false);
-      showToastMessage('your session is expire ');
-    }
-  }
-
   void showToastMessage(String message) {
     Fluttertoast.showToast(
         msg: message,
@@ -328,41 +284,8 @@ class InitState extends State<DashBoardCalederList> {
       )
   );
 
-  void getMonthlyEventsData(String token, String year, String month) async{
-    CommonOperation.showProgressDialog(context, "loading", true);
-    final monthlyCalenderEventsData =
-    await networkCall.MonthlyCalendarEventsCall(token, year, month);
-    if (monthlyCalenderEventsData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-      weekList = monthlyCalenderEventsData.weeks!;
-      for(int i =0;i<weekList.length; i++){
-        daysList = monthlyCalenderEventsData.weeks![i].days!;
-          for(int j=0; j<daysList.length;j++){
-            monthlyEventList = monthlyCalenderEventsData.weeks![i].days![j].events!;
-            for(int k=0;k<monthlyEventList.length;k++){
-              var dateListIndex = DateTime.parse(getDateStump( monthlyCalenderEventsData.weeks![i].days![j].events![k].timesort.toString())).toString();
-              dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(monthlyCalenderEventsData.weeks![i].days![j].events![k]) : dateList[dateListIndex] = [monthlyCalenderEventsData.weeks![i].days![j].events![k]];
-            }
-          }
-      }
-      print('date list '+ dateList.toString());
-      CommonOperation.hideProgressDialog(context);
-      showToastMessage(message);
-      setState(() {
-        //getMonthlyEventsData(token, _focusedDay.year.toString(),_focusedDay.month.toString());
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
-      });
-    } else {
-      CommonOperation.hideProgressDialog(context);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoged', false);
-      showToastMessage('your session is expire ');
-    }
 
-  }
-
-  void openDialog(List<dynamic> eventsForDay) {
+  void openDialog(List<dynamic> eventsForDay, List<upComing.Events> eventsDataList) {
 
     showDialog(
         context: context,
@@ -374,40 +297,79 @@ class InitState extends State<DashBoardCalederList> {
               width: MediaQuery.of(context).size.width/3,
               child: Column(
                 children: [
-                  ListView.builder(
+                  eventsForDay.length>0?ListView.builder(
                       shrinkWrap: true,
-                      itemCount: eventsForDay.length,
+                      itemCount: eventsDataList.length,
                       itemBuilder: (context, index) {
-                        final mEventData = eventsForDay[index];
+                        final mEventData = eventsDataList[index];
 
                         return buildDialogEvent(mEventData);
-                      }),
-
-                  InkWell(
-                    onTap: (){
-                      Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MonthlyCalenderDetailsPage(eventsForDay)));
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Container(
-                        width:150,
-                        height: 30,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color(0xFF00BC78)
-                        ),
-                        child: Center(
-                          child: Text("View Details", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
-                        ),
+                      }):Center(
+                    child: SizedBox(
+                      height: 100,
+                      child: Column(
+                        children: [
+                          Icon(Icons.warning_amber, size: 30,),
+                          Text('No event Found!'),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+            actions: [
+              Visibility(
+                visible: eventsForDay.length>0?true:false,
+                child: InkWell(
+                  onTap: (){
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MonthlyCalenderDetailsPage(eventsForDay)));
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Container(
+                      width:150,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: PrimaryColor
+                      ),
+                      child: Center(
+                        child: Text("View Details", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: eventsForDay.length>0?true:false,
+                child: InkWell(
+                  onTap: (){
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCalenderEventPage()));
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Container(
+                      width:150,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: SecondaryColor,
+                      ),
+                      child: Center(
+                        child: Text("Create Events", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         });
   }
@@ -438,7 +400,7 @@ class InitState extends State<DashBoardCalederList> {
                     width: MediaQuery.of(context).size.width / 3,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(mEventData.popupname.toString(),
+                      child: Text(mEventData.name.toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: GoogleFonts.comfortaa(
@@ -451,7 +413,7 @@ class InitState extends State<DashBoardCalederList> {
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text( DateFormat.yMMMEd().format(DateTime.parse(
                         getDateStump(mEventData
-                            .timestart
+                            .timesort
                             .toString()))),
                         style: GoogleFonts.comfortaa(
                             color: Colors.black54,
