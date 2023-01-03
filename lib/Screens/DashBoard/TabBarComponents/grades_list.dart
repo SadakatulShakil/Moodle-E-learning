@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:radda_moodle_learning/ApiModel/gradeResponse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,34 +43,34 @@ class InitState extends State<DashBoardGradesList> {
         backgroundColor: Color(0xFFF1F1FA),
         body: widget.gradeList.length > 0
             ? Column(
-          children: [
-            Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                  child: ListView.builder(
-                      itemCount: widget.courseList.length,
-                      itemBuilder: (context, index) {
-                        final mCourseData = widget.courseList[index];
-                        final mGradeData = widget.gradeList[index];
-                        return buildAllCourse(mCourseData, mGradeData);
-                      })),
-            ),
-          ],
-        )
+                children: [
+                  Expanded(
+                    child: Padding(
+                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                        child: ListView.builder(
+                            itemCount: widget.courseList.length,
+                            itemBuilder: (context, index) {
+                              final mCourseData = widget.courseList[index];
+                              final mGradeData = widget.gradeList[index];
+                              return buildAllCourse(mCourseData, mGradeData);
+                            })),
+                  ),
+                ],
+              )
             : Center(
-          child: SizedBox(
-            height: 100,
-            child: Column(
-              children: [
-                Icon(
-                  Icons.warning_amber,
-                  size: 30,
+                child: SizedBox(
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.warning_amber,
+                        size: 30,
+                      ),
+                      Text('No Data Found!'),
+                    ],
+                  ),
                 ),
-                Text('No Data Found!'),
-              ],
-            ),
-          ),
-        ));
+              ));
   }
 
   void getSharedData() async {
@@ -133,7 +134,7 @@ class InitState extends State<DashBoardGradesList> {
         timeInSecForIosWeb: 1,
         textColor: Colors.white,
         fontSize: 16.0 //message font size
-    );
+        );
   }
 
   Widget buildAllCourse(mCourseData, Grades mGradeData) => GestureDetector(
@@ -145,77 +146,87 @@ class InitState extends State<DashBoardGradesList> {
                 builder: (context) => GradesDetailsPage(mCourseData, mGradeData)));
       },
       child: Container(
-        margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 8),
+        margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 5),
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.black12)),
+          color: Colors.white,
+            borderRadius: BorderRadius.circular(10),),
         child: Row(
           children: [
-            FadeInImage.assetNetwork(
-                placeholder: 'assets/images/course_image.png',
-                image: mCourseData.overviewfiles.length != 0
-                    ? mCourseData.overviewfiles.first.fileurl
-                    .replaceAll("/webservice", "")
-                    .toString()
-                    : 'https://image.shutterstock.com/image-photo/online-courses-text-man-using-260nw-600126515.jpg',
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Text(mCourseData.displayname.toString(),
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.comfortaa(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ),
+            PhysicalModel(
+              color: Colors.black,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(10),
+              child: FadeInImage.assetNetwork(
+                  placeholder: 'assets/images/course_image.png',
+                  image: mCourseData.overviewfiles.length != 0
+                      ? mCourseData.overviewfiles.first.fileurl
+                          .replaceAll("/webservice", "")
+                          .toString()
+                      : 'https://image.shutterstock.com/image-photo/online-courses-text-man-using-260nw-600126515.jpg',
+                  height: 80,
+                  width: 80,
+                  fit: BoxFit.fill),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:8,bottom: 5.0),
+                    child: Text(mCourseData.displayname.toString(),
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.nanumGothic(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600)),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                        'Start date: ' +
-                            DateFormat.yMMMEd().format(DateTime.parse(
-                                getDateStump(
-                                    mCourseData.startdate.toString()))),
-                        style: GoogleFonts.comfortaa(
-                            color: Colors.black54,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left:8,bottom: 5.0),
+                  child: Text(
+                      'Start date: ' +
+                          DateFormat.yMMMEd().format(DateTime.parse(
+                              getDateStump(
+                                  mCourseData.startdate.toString()))),
+                      style: GoogleFonts.nanumGothic(
+                          fontSize: 13,
+                          )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: LinearPercentIndicator(
+                    width: 140.0,
+                    lineHeight: 5.0,
+                    percent: mCourseData.progress != null
+                        ?mCourseData.progress.ceil()/100:0.0,
+                    trailing: Text(
                         mCourseData.progress != null
                             ? mCourseData.progress.ceil().toString() +
                             ' % complete'
                             : '0 % complete',
-                        style: GoogleFonts.comfortaa(
-                            color: SecondaryColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
+                        style: GoogleFonts.nanumGothic(
+                          fontSize: 12,
+                        )),
+                    barRadius: const Radius.circular(5),
+                    backgroundColor: Colors.grey.shade300,
+                    progressColor: PrimaryColor,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text(
-                        mGradeData.grade.toString() != null && mGradeData.grade.toString() != '-'
-                            ? 'Grade: ' + mGradeData.grade.toString()
-                            : 'Grade: ' + "Not evaluated yet",
-                        style: GoogleFonts.comfortaa(
-                            color: Colors.black,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left:8,bottom: 5.0),
+                  child: Text(
+                      mGradeData.grade.toString() != null && mGradeData.grade.toString() != '-'
+                          ? 'Grade: ' + mGradeData.grade.toString()
+                          : 'Grade: ' + "Not evaluated yet",
+                      style: GoogleFonts.nanumGothic(
+                          color: Colors.black,
+                          fontSize: 13,
+                          )),
+                ),
+              ],
             )
           ],
         ),

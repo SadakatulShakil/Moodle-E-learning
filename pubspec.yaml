@@ -45,6 +45,7 @@ dependencies:
   provider: ^6.0.2
   get: 4.6.1
   dio: ^4.0.1
+  percent_indicator: ^4.2.2
   mobile_scanner: ^1.1.2
   fluttertoast: ^8.0.8
   flutter_html: ^2.0.0
@@ -53,6 +54,7 @@ dependencies:
   advance_pdf_viewer: ^2.0.1
   syncfusion_flutter_pdfviewer: ^20.3.50
   power_file_view: ^1.0.1
+  custom_radio_group_list: ^1.0.0
   path_provider: ^2.0.11
   flutter_file_downloader: ^1.1.0+1
   audioplayers: ^1.1.1

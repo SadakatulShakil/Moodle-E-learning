@@ -469,7 +469,7 @@ class InitState extends State<ProfileAboutPage> {
           getDateStump(profileInfoList[0]
               .lastaccess
               .toString())));
-      print('data_count1 ' + profileInfoList.first.toString());
+      print('data_about ' + email.toString());
       //CommonOperation.hideProgressDialog(context);
       //showToastMessage(message);
       setState(() {

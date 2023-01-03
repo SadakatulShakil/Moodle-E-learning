@@ -11,10 +11,12 @@ import '../../Helper/colors_class.dart';
 import '../../Helper/operations.dart';
 
 class ChatDashBoardScreen extends StatefulWidget {
-  String currentUserId;
+  String from;
+  String currentId;
   dynamic mChatData;
+  ChatDashBoardScreen(this.from, this.currentId, this.mChatData);
 
-  ChatDashBoardScreen(this.currentUserId, this.mChatData);
+
 
   @override
   State<StatefulWidget> createState() => InitState();
@@ -24,13 +26,18 @@ class ChatDashBoardScreen extends StatefulWidget {
 
 class InitState extends State<ChatDashBoardScreen> {
   final textController = TextEditingController();
+  final messageController = TextEditingController();
   final _scrollController = ScrollController();
 
   NetworkCall networkCall = NetworkCall();
   List<dynamic> courseList = [];
   List<Messages> groupMessagesList = [];
+  List<Members> groupMembersList = [];
   String token = '';
+  String userId = '';
   String name = '';
+  String message = '';
+  String memberName = '';
   String imageUrl =
       'https://3rdpartyservicesofflorida.com/wp-content/uploads/2015/03/blank-profile.jpg';
   String lastAccess = '';
@@ -59,7 +66,7 @@ class InitState extends State<ChatDashBoardScreen> {
       ),
         backgroundColor: PrimaryColor,
         title: Text(
-          widget.mChatData.name.toString(),
+          widget.from=='private'?widget.mChatData.members.first.fullname.toString():widget.from=='contact'?widget.mChatData.fullname.toString():widget.mChatData.name.toString(),
           style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold
@@ -117,16 +124,13 @@ class InitState extends State<ChatDashBoardScreen> {
       color: Colors.grey.shade300,
       child: Row(
         children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.photo),
-            iconSize: 25.0,
-            color: Theme.of(context).primaryColor,
-            onPressed: () {},
-          ),
           Expanded(
             child: TextField(
+              controller: messageController,
               textCapitalization: TextCapitalization.sentences,
-              onChanged: (value) {},
+              onChanged: (value) {
+                message = value;
+              },
               decoration: InputDecoration(
                   hintText: 'Send a message..'
               ),
@@ -136,7 +140,12 @@ class InitState extends State<ChatDashBoardScreen> {
             icon: Icon(Icons.send),
             iconSize: 25.0,
             color: Theme.of(context).primaryColor,
-            onPressed: () {},
+            onPressed: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              messageController.clear();
+              widget.from == 'private'?sendMessage(token, message, widget.mChatData.members.first.id.toString())
+                  :sendGroupMessage(token, message, widget.mChatData.id.toString());
+            },
           ),
         ],
       ),
@@ -146,9 +155,10 @@ class InitState extends State<ChatDashBoardScreen> {
   void getSharedData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('TOKEN')!;
+    userId = prefs.getString('userId')!;
     setState(() {
       getGroupMessage(
-          token, widget.currentUserId, widget.mChatData.id.toString());
+          token, widget.currentId, widget.mChatData.id.toString());
     });
   }
 
@@ -156,10 +166,11 @@ class InitState extends State<ChatDashBoardScreen> {
     CommonOperation.showProgressDialog(context, "loading", true);
     final groupMessageData =
     await networkCall.GroupMessageCall(token, userId, convId);
-    if (groupMessageData != null) {
+    if (groupMessageData != null && groupMessageData.exception == null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String message = 'Success';
       groupMessagesList = groupMessageData.messages!;
+      groupMembersList = groupMessageData.members!;
       //print('hospital data' + groupMessageData.messages!.first.text.toString());
       CommonOperation.hideProgressDialog(context);
       //showToastMessage(message);
@@ -174,6 +185,9 @@ class InitState extends State<ChatDashBoardScreen> {
         // email = userProfilesData.email.toString();
         // getUserCourses(token, userId);
       });
+    }else if(groupMessageData!.exception != null){
+      CommonOperation.hideProgressDialog(context);
+      showToastMessage(groupMessageData.exception.toString());
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
@@ -185,7 +199,7 @@ class InitState extends State<ChatDashBoardScreen> {
     Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
+        gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
         textColor: Colors.white,
         fontSize: 16.0 //message font size
@@ -217,7 +231,7 @@ class InitState extends State<ChatDashBoardScreen> {
   }
 
   Widget MessageWidget(Messages mContactData) {
-    if(mContactData.useridfrom.toString() == '60'){
+    if(mContactData.useridfrom.toString() == userId){
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -249,6 +263,11 @@ class InitState extends State<ChatDashBoardScreen> {
         ],
       );
     }else{
+      for(int i = 0;i<groupMembersList.length;i++){
+        if(groupMembersList[i].id.toString() == mContactData.useridfrom.toString()){
+          memberName = groupMembersList[i].fullname.toString();
+        }
+      }
       return Row(
         children: [
           Container(
@@ -264,6 +283,10 @@ class InitState extends State<ChatDashBoardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(memberName),
+                ),
                 Html(data: mContactData.text!),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
@@ -282,5 +305,29 @@ class InitState extends State<ChatDashBoardScreen> {
       );
     }
   }
+
+  Future sendMessage(String token, String message, String receiverId) async{
+    CommonOperation.showProgressDialog(context, "loading", true);
+    final sendMessageResponse =
+    await networkCall.SendMessageCall(token, message, receiverId);
+    CommonOperation.hideProgressDialog(context);
+    if(sendMessageResponse != null){
+      getSharedData();
+      setState(() {
+      });
+    }
+  }
+  Future sendGroupMessage(String token, String message, String conversationId) async{
+    CommonOperation.showProgressDialog(context, "loading", true);
+    final sendMessageResponse =
+    await networkCall.SendGroupMessageCall(token, message, conversationId);
+    CommonOperation.hideProgressDialog(context);
+    if(sendMessageResponse != null){
+      getSharedData();
+      setState(() {
+      });
+    }
+  }
+
 
 }

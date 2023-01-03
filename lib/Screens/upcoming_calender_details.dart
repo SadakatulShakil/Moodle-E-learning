@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -29,7 +30,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text('Calendar',
-            style: GoogleFonts.comfortaa(
+            style: GoogleFonts.nanumGothic(
                 color: const Color(0xFFFFFFFF),
                 fontWeight: FontWeight.w700,
                 fontSize: 18)),
@@ -73,7 +74,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                                 'Upcoming Event',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.comfortaa(
+                                style: GoogleFonts.nanumGothic(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
@@ -115,7 +116,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
         margin: const EdgeInsets.only(left: 12.0, right: 12, top: 5, bottom: 8),
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-            color: Colors.white,
+          color: Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.black12)),
         child: Padding(
@@ -129,7 +130,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                   padding: const EdgeInsets.only(bottom: 5.0),
                   child: Text(mCourseData.name.toString(),
                       maxLines: 5,
-                      style: GoogleFonts.comfortaa(
+                      style: GoogleFonts.nanumGothic(
                           color: Colors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
@@ -145,7 +146,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                         getDateStump(mCourseData
                             .timestart
                             .toString()))),
-                        style: GoogleFonts.comfortaa(
+                        style: GoogleFonts.nanumGothic(
                             color: Colors.black54,
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),
@@ -169,12 +170,7 @@ class InitState extends State<UpcomingCalenderDetailsPage> {
                       child: Row(
                         children: [
                           Flexible(
-                            child: Text(
-                                mCourseData.description.toString() == ''?'no description':mCourseData.description.toString(),
-                                style: GoogleFonts.comfortaa(
-                                    color: Colors.black54,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold)),
+                            child: mCourseData.description.toString() == ''?Text("no description"):Html(data: mCourseData.description.toString()),
                           ),
                         ],
                       ),

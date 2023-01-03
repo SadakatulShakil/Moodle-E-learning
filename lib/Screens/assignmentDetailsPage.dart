@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:radda_moodle_learning/ApiModel/assignmentResponse.dart';
 import 'package:radda_moodle_learning/ApiModel/gradeDetailsResponse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,7 @@ class InitState extends State<AssignmentDetailsPage> {
   bool onlineText = false;
   bool subFileShow = false;
   bool feedFileShow = false;
+  bool showSubmitButton = false;
   String submissionStatus = '';
   String gradingStatus = '';
   String lastDateSubmission = '';
@@ -241,7 +243,10 @@ class InitState extends State<AssignmentDetailsPage> {
                                                 padding: const EdgeInsets.all(8.0),
                                                 child: Align(
                                                     alignment: Alignment.centerLeft,
-                                                    child: Text(lastDateSubmission, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
+                                                    child: Text(DateFormat.yMMMEd().format(
+                                                        DateTime.parse(getDateStump(
+                                                            lastDateSubmission
+                                                                .toString()))), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
                                               ),
                                             ],
                                           ),
@@ -313,9 +318,39 @@ class InitState extends State<AssignmentDetailsPage> {
                                           ),
                                         ],
                                       ),
+
+                                      Visibility(
+                                          visible: showSubmitButton?true:false,
+                                        child: InkWell(
+                                          onTap: (){
+                                            //callLoginApi(userNameController.text, passwordController.text);
+                                            //agree?Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen())): showToastMessage('please accept our terms & condition');
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(15),
+                                              ),
+                                              child: Container(
+                                                width:350,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(15),
+                                                    color: PrimaryColor
+                                                ),
+                                                child: Center(
+                                                  child: Text("Edit Submission", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
+                                SizedBox(height: 10,),
                                 Visibility(
                                   visible: feedbackShow?true:false,
                                   child: Container(
@@ -365,7 +400,10 @@ class InitState extends State<AssignmentDetailsPage> {
                                                   padding: const EdgeInsets.all(8.0),
                                                   child: Align(
                                                       alignment: Alignment.centerLeft,
-                                                      child: Text(gradeDate, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
+                                                      child: Text(DateFormat.yMMMEd().format(
+                                                          DateTime.parse(getDateStump(
+                                                              gradeDate
+                                                                  .toString()))), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
                                                 ),
                                               ],
                                             ),
@@ -423,32 +461,6 @@ class InitState extends State<AssignmentDetailsPage> {
                                     ),
                                   ),
                                 ),
-
-                                InkWell(
-                                  onTap: (){
-                                    //callLoginApi(userNameController.text, passwordController.text);
-                                    //agree?Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen())): showToastMessage('please accept our terms & condition');
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Container(
-                                        width:350,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15),
-                                            color: PrimaryColor
-                                        ),
-                                        child: Center(
-                                          child: Text("Submit", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
                               ],
                             )
                         ),
@@ -523,10 +535,11 @@ class InitState extends State<AssignmentDetailsPage> {
       //gradeDetailsList = userGradeDetailsData.usergrades![0].gradeitems!;
       print('data_content ' + assignmentDetailsData.lastattempt!.submission!.status.toString());
       submissionStatus = assignmentDetailsData.lastattempt!.submission!.status.toString();
+      showSubmitButton = assignmentDetailsData.lastattempt!.canedit!;
       gradingStatus = assignmentDetailsData.lastattempt!.gradingstatus.toString();
       lastDateSubmission = assignmentDetailsData.lastattempt!.submission!.timemodified.toString();
       for(int i=0;i<assignmentDetailsData.lastattempt!.submission!.plugins!.length;i++){
-        if(assignmentDetailsData.lastattempt!.submission!.plugins![i].type == 'onlinetext'){
+        if(assignmentDetailsData.lastattempt!.submission!.plugins![i].type == 'onlinetext' && assignmentDetailsData.lastattempt!.submission!.plugins![i].editorfields!.first.text != ""){
           onlineText = true;
           onlineTextAnswer = assignmentDetailsData.lastattempt!.submission!.plugins![i].editorfields!.first.text.toString();
         }else if(assignmentDetailsData.lastattempt!.submission!.plugins![i].type =="file" && assignmentDetailsData.lastattempt!.submission!.plugins![i].fileareas!.first.files!.length>0){

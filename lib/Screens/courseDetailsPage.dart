@@ -384,15 +384,16 @@ class InitState extends State<CourseDetailsPage> {
                                               courseContentList[sub_index]
                                                   .modules[index]
                                                   .modname
-                                                  .toString() == 'hvp'?Image.asset("assets/images/video_icon.png", height:40,width: 40,)
+                                                  .toString() == 'hvp'?Image.asset("assets/images/h5p.png", height:40,width: 40,)
                                                   :courseContentList[sub_index]
                                                   .modules[index]
                                                   .modname
                                                   .toString() == 'quiz'?Image.asset("assets/images/quiz_icon.png", height:40,width: 40,):
-                                                   courseContentList[sub_index]
+                                              courseContentList[sub_index]
                                                   .modules[index]
                                                   .modname
-                                                  .toString() == 'page'?Image.asset("assets/images/course_icon.png", height:40,width: 40,):Image.asset("assets/images/course_icon.png", height:40,width: 40,),
+                                                  .toString() == 'page'?Image.asset("assets/images/video_icon.png", height:40,width: 40,):
+                                              Image.asset("assets/images/course_icon.png", height:40,width: 40,),
 
                                               Column(
                                                 children: [
@@ -599,7 +600,7 @@ class InitState extends State<CourseDetailsPage> {
                                 "forum" ? OpenDialog(courseContentList[sub_index].modules[index]
                                 .name.toString(), 'No description Yet!'):courseContentList[sub_index].modules[index]
                                 .modname ==
-                                "page" ? findVideoUrl(token, courseContentList[sub_index].modules[index].contents[0].fileurl.toString(), courseContentList[sub_index].modules[index].name.toString()):
+                                "page" ? findVideoUrl(token, courseContentList[sub_index].modules[index].contents[0].fileurl.toString(), courseContentList[sub_index].modules[index].name.toString(), courseContentList[sub_index].modules[index].instance.toString()):
                             print("Not assignment clicked !");
                             // Navigator.push(
                             //     context,
@@ -964,7 +965,7 @@ class InitState extends State<CourseDetailsPage> {
         });
   }
 
-  findVideoUrl(String token, String url, String name) async{
+  findVideoUrl(String token, String url, String name, String pageid) async{
     CommonOperation.showProgressDialog(context, "loading", true);
     dynamic contentdata =
     await networkCall.VideoUrlCall(token, url);
@@ -978,6 +979,7 @@ class InitState extends State<CourseDetailsPage> {
       String vidUrl = mainUrl; //|| 'https://www.youtube.com/watch?v=1gDhl4leEzA&t=2s';
 
       setState(() {
+        activityView(pageid);
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -991,4 +993,18 @@ class InitState extends State<CourseDetailsPage> {
     }
   }
 
+  activityView(String pageid) async{
+    dynamic activityViewData =
+    await networkCall.activityViewCall(token, pageid);
+    if (activityViewData != null) {
+      print("View succesfully");
+      setState(() {
+
+      });
+    } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoged', false);
+      showToastMessage('your session is expire ');
+    }
+  }
 }
