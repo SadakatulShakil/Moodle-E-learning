@@ -45,7 +45,7 @@ class InitState extends State<QuizDetailsPage> {
     {'type': 'hidden', 'name': 'q507:2_choice3', 'value': 0, 'text': '__main__'},
   ];
   List<String> ansDemo = [
-  'Banana', 'Mango', 'Apple', 'Chery'
+    'Banana', 'Mango', 'Apple', 'Chery'
   ];
   NetworkCall networkCall = NetworkCall();
 
@@ -152,7 +152,7 @@ class InitState extends State<QuizDetailsPage> {
                     child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 100),
                         child: ListView.builder(
-                          scrollDirection: Axis.vertical,
+                            scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             itemCount: questionList.length,
                             itemBuilder: (context, index) {
@@ -174,13 +174,11 @@ class InitState extends State<QuizDetailsPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('TOKEN')!;
     userId = prefs.getString('userId')!;
-    setState(() {
-      getQuizQuestionData(token, widget.quizId, widget.attemptId);
-      //getGradeContent(token, widget.mGradeData.id.toString(), userId);
-    });
+    Future.wait([getQuizQuestionData(token, widget.quizId, widget.attemptId)]);
+
   }
 
-  void getQuizQuestionData(String token, String quizId, String attemptId) async{
+  Future getQuizQuestionData(String token, String quizId, String attemptId) async{
     CommonOperation.showProgressDialog(context, "loading", true);
     final quizQuestionData =
     await networkCall.QuizQuestionCall(token, attemptId);
@@ -192,9 +190,7 @@ class InitState extends State<QuizDetailsPage> {
       dumpQuestion = unescape.convert(quizQuestionData.questions![0].html.toString());
       print('Unecaped String----> '+dumpQuestion);
       CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
       setState(() {
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
       });
     } else {
       CommonOperation.hideProgressDialog(context);
@@ -283,24 +279,14 @@ class InitState extends State<QuizDetailsPage> {
 
       children: [
         Html(data: question),
-        // RadioGroup(
-        //     radioList: answers.toString(),
-        //     selectedItem: -1,
-        //     onChanged: (value) {
-        //       print('Value : ${value}');
-        //     },
-        //     disabled: false)
+
 
         answers[0]['type'].toString() == 'hidden'?RadioGroup(
             radioListObject: answers,
             textParameterName: 'text',
             selectedItem: -1,
             onChanged: (value) {
-              // List<Answer> answerMapList = [Answer(index: value['name'].toString(), name: value['text'].toString())];
-              // List<Answer> uniquelist = answerMapList.where((student) => student.index == value['name'].toString()).toList();
-              // name.removeWhere((element) => element.index == value['name'].toString());
-              // name.addAll(uniquelist);
-              // print('-->>>'+name.toString());
+
               try{
                 String key = value['name'].split("_")[0];
                 answerMap[key] = value["name"].split("_")[1];
@@ -313,7 +299,7 @@ class InitState extends State<QuizDetailsPage> {
           textInputAction: TextInputAction.next,
           onChanged: (textAnswer)=>  print('Value : '+textAnswer),
           decoration: InputDecoration(
-              //prefixIcon: Image.asset("assets/icons/user_icon.png", width: 20, height: 20),
+            //prefixIcon: Image.asset("assets/icons/user_icon.png", width: 20, height: 20),
               border: OutlineInputBorder(),
               labelText: 'Answer',labelStyle: GoogleFonts.nanumGothic(
             fontSize: 15,
@@ -326,37 +312,7 @@ class InitState extends State<QuizDetailsPage> {
           autofocus: false,
         ),
 
-        // Container(
-        //   height: 400,
-        //   child: Padding(
-        //       padding:
-        //       const EdgeInsets.only(left: 12.0, right: 12.0),
-        //       child: ListView.builder(
-        //           itemCount: answers.length,
-        //           itemBuilder: (context, index) {
-        //             final mAnsData = answers[index];
-        //
-        //             return Text('jjjjjjj');
-        //           })),
-        // )
-        //Html(data: output["answers"].text.toString),
       ],
     );
   }
-
-  // Future callQuizAttempt() async{
-  //   CommonOperation.showProgressDialog(context, "loading", true);
-  //   final quizSubmitData =
-  //   await networkCall.QuizSubmitCall(token, name1, name2, name3, name4, name5, value1, value2, value3, value4, value5);
-  //   if (quizSubmitData != null) {
-  //     if(quizSubmitData.state == 'finished'){
-  //
-  //     }
-  //   } else {
-  //     CommonOperation.hideProgressDialog(context);
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     await prefs.setBool('isLoged', false);
-  //     showToastMessage('your session is expire ');
-  //   }
-  // }
 }

@@ -16,7 +16,6 @@ class InitState extends State<ProfileUpdatePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {});
   }
 
   @override
@@ -34,7 +33,7 @@ class InitState extends State<ProfileUpdatePage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text('Profile update',
-            style: GoogleFonts.comfortaa(
+            style: GoogleFonts.nanumGothic(
                 color: const Color(0xFFFFFFFF),
                 fontWeight: FontWeight.w700,
                 fontSize: 18)),
@@ -93,7 +92,7 @@ class InitState extends State<ProfileUpdatePage> {
                           color: PrimaryColor
                       ),
                       child: Center(
-                        child: Text("Save changes", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                        child: Text("Save changes", style: GoogleFonts.nanumGothic(color: Colors.white, fontWeight: FontWeight.bold),),
                       ),
                     ),
                   ),
@@ -116,7 +115,7 @@ class InitState extends State<ProfileUpdatePage> {
                           color: const Color(0xFFFFFFFF)
                       ),
                       child: Center(
-                        child: Text("Cancel", style: GoogleFonts.comfortaa(color: Colors.black, fontWeight: FontWeight.bold),),
+                        child: Text("Cancel", style: GoogleFonts.nanumGothic(color: Colors.black, fontWeight: FontWeight.bold),),
                       ),
                     ),
                   ),

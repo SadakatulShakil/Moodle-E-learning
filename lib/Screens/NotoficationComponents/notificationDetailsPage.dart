@@ -137,7 +137,7 @@ class InitState extends State<NotificationDetailsPage> {
 
                             SizedBox(height: 8,),
 
-                            widget.mNotificationData.fullmessagehtml.toString() == 'insights'?parseNotification(widget.mNotificationData.fullmessagehtml.toString()):Html(data: widget.mNotificationData.fullmessagehtml.toString(),)
+                            parseNotification(widget.mNotificationData.fullmessagehtml.toString())
                           ],
                         ),),
                       )

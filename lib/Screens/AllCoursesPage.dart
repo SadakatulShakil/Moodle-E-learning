@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
-import '../Helper/colors_class.dart';
+import 'package:radda_moodle_learning/Helper/colors_class.dart';
 
 class AllCoursesPage extends StatefulWidget {
   List<dynamic> allCourseList;
@@ -29,7 +28,7 @@ class InitState extends State<AllCoursesPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text('Enrolled Courses',
-            style: GoogleFonts.comfortaa(
+            style: GoogleFonts.nanumGothic(
                 color: const Color(0xFFFFFFFF),
                 fontWeight: FontWeight.w700,
                 fontSize: 18)),
@@ -111,9 +110,9 @@ class InitState extends State<AllCoursesPage> {
                       padding: const EdgeInsets.only(bottom: 5.0),
                       child: Text(mCourseData.displayname.toString(),
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.comfortaa(
+                          style: GoogleFonts.nanumGothic(
                               color: Colors.black,
-                              fontSize: 18,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold)),
                     ),
                   ),
@@ -123,10 +122,9 @@ class InitState extends State<AllCoursesPage> {
                         getDateStump(mCourseData
                             .startdate
                             .toString()))),
-                        style: GoogleFonts.comfortaa(
-                            color: Colors.black54,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
+                        style: GoogleFonts.nanumGothic(
+                          color: Colors.black54,
+                          fontSize: 13,)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
@@ -135,18 +133,18 @@ class InitState extends State<AllCoursesPage> {
                             ? mCourseData.progress.ceil().toString() +
                             ' % complete'
                             : '0 % complete',
-                        style: GoogleFonts.comfortaa(
-                            color: SecondaryColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
+                        style: GoogleFonts.nanumGothic(
+                          color: SecondaryColor,
+                          fontSize: 13,
+                        )),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
                     child: Text( 'Total user: '+mCourseData.enrolledusercount.toString(),
-                        style: GoogleFonts.comfortaa(
-                            color: Colors.black54,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold)),
+                        style: GoogleFonts.nanumGothic(
+                          color: Colors.black54,
+                          fontSize: 13,
+                        )),
                   ),
                 ],
               ),

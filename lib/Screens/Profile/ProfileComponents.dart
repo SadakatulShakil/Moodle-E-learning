@@ -32,9 +32,7 @@ class InitState extends State<ProfileComponents> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-      checkconnectivity();
-    });
+    checkconnectivity();
   }
 
 
@@ -102,7 +100,7 @@ class InitState extends State<ProfileComponents> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(name.toString(), style: GoogleFonts.comfortaa(
+                          Text(name.toString(), style: GoogleFonts.nanumGothic(
                               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white
                           ),),
                           Row(
@@ -110,7 +108,7 @@ class InitState extends State<ProfileComponents> {
                               Icon(Icons.email_outlined, size: 12, color: Colors.white,),
                               Padding(
                                 padding: const EdgeInsets.only(left: 5.0, bottom: 2),
-                                child: Text(email, style: GoogleFonts.comfortaa(
+                                child: Text(email, style: GoogleFonts.nanumGothic(
                                     fontSize: 12, color: Colors.white
                                 ),),
                               ),
@@ -164,25 +162,22 @@ class InitState extends State<ProfileComponents> {
     imageurl = prefs.getString('imageUrl')!;
     String token = prefs.getString('TOKEN')!;
     String userid = prefs.getString('userId')!;
-    setState(() {
-      getSiteInfo(token, userid);
-    });
+    Future.wait([getSiteInfo(token, userid), getProfileInfo(token, userid)]);
   }
   Future getSiteInfo(String token, String userid) async{
 
     CommonOperation.showProgressDialog(context, "loading", true);
     final userDetailsData = await networkCall.UserDetailsCall(token);
     if(userDetailsData != null){
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
+      CommonOperation.hideProgressDialog(context);
       print('hospital data'+ userDetailsData.firstname.toString());
       surName = userDetailsData.lastname.toString();
       firstName = userDetailsData.firstname.toString();
       setState(() {
-        getProfileInfo(token, userid);
       });
 
     }else{
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
@@ -192,20 +187,13 @@ class InitState extends State<ProfileComponents> {
 
 
   Future getProfileInfo(String token, String userId) async {
-    //CommonOperation.showProgressDialog(context, "loading", true);
     final profileInfoData =
     await networkCall.ProfileInfoCall(token, userId);
     if (profileInfoData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
       profileInfoList = profileInfoData;
       email = profileInfoList[0].email.toString();
-      //userName = profileInfoList[0].username.toString();
       print('data_count1 ' + profileInfoList.first.toString());
-      CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
       setState(() {
-        //getAllCourses(token, userId);
       });
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -249,7 +237,7 @@ class InitState extends State<ProfileComponents> {
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             title:Flexible(child: Align(
               alignment: Alignment.center,
-              child: Text('Network Issue !',style: GoogleFonts.comfortaa(
+              child: Text('Network Issue !',style: GoogleFonts.nanumGothic(
                   fontSize: 12
               )),
             )),
@@ -270,9 +258,7 @@ class InitState extends State<ProfileComponents> {
                 onTap: (){
                   Navigator.pop(context);
                   checkconnectivity();
-                  setState(() {
-
-                  });
+                  setState(() {});
                 },
                 child: Card(
                   shape: RoundedRectangleBorder(
@@ -286,7 +272,7 @@ class InitState extends State<ProfileComponents> {
                       color: SecondaryColor,
                     ),
                     child: Center(
-                      child: Text("Try again", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                      child: Text("Try again", style: GoogleFonts.nanumGothic(color: Colors.white, fontWeight: FontWeight.bold),),
                     ),
                   ),
                 ),

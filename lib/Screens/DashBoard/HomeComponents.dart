@@ -45,7 +45,6 @@ class InitState extends State<HomeComponents> {
     // TODO: implement initState
     super.initState();
     checkconnectivity();
-    setState(() {});
   }
 
   @override
@@ -85,7 +84,7 @@ class InitState extends State<HomeComponents> {
                       children: [
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text(name.toString(), style: GoogleFonts.comfortaa(
+                          child: Text(name.toString(), style: GoogleFonts.nanumGothic(
                               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white
                           ),),
                         ),
@@ -96,7 +95,7 @@ class InitState extends State<HomeComponents> {
                               padding: const EdgeInsets.only(left: 5.0, bottom: 2),
                               child: Align(
                                 alignment: Alignment.topLeft,
-                                child: Text(email.toString(), style: GoogleFonts.comfortaa(
+                                child: Text(email.toString(), style: GoogleFonts.nanumGothic(
                                     fontSize: 12, color: Colors.white
                                 ),),
                               ),
@@ -158,66 +157,51 @@ class InitState extends State<HomeComponents> {
     imageurl = prefs.getString('imageUrl')!;
     token = prefs.getString('TOKEN')!;
     String userid = prefs.getString('userId')!;
-    setState(() {
-      getProfileInfo(token, userid);
-      getRecentCourses(token, userid);
-    });
+
+    Future.wait([
+      getProfileInfo(token, userid),
+      getRecentCourses(token, userid),
+      getBadgesInfo(token, userid),
+      getAllCourses(token, userid),
+      getCoursesGrade(token),
+      getEventsData(token)]);
   }
   Future<void> getProfileInfo(String token, String userId) async {
-    //CommonOperation.showProgressDialog(context, "loading", true);
+    CommonOperation.showProgressDialog(context, "loading", true);
     final profileInfoData =
     await networkCall.ProfileInfoCall(token, userId);
     if (profileInfoData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-      //userName = profileInfoList[0].username.toString();
       email = profileInfoData[0].email.toString();
-      //CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {
-        getBadgesInfo(token, userId);
-      });
+      CommonOperation.hideProgressDialog(context);
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
     }
   }
   Future<void> getBadgesInfo(String token, String userId) async {
-    CommonOperation.showProgressDialog(context, "loading", true);
+    //CommonOperation.showProgressDialog(context, "loading", true);
     final badgesData =
     await networkCall.BadgesResponseCall(token, userId);
     if (badgesData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
       badgesDataList = badgesData.badges!;
-      //print('data_count1 ' + recentCourseList.first.toString());
-      CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {
-
-      });
+      setState(() {});
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
     }
   }
   Future<void> getRecentCourses(String token, String userId) async {
-    CommonOperation.showProgressDialog(context, "loading", true);
+    //CommonOperation.showProgressDialog(context, "loading", true);
     final recentCoursesData =
     await networkCall.RecentCoursesListCall(token, userId);
     if (recentCoursesData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
       recentCourseList = recentCoursesData;
-      //print('data_count1 ' + recentCourseList.first.toString());
-      //CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {
-        getAllCourses(token, userId);
-      });
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
@@ -228,17 +212,10 @@ class InitState extends State<HomeComponents> {
     final userCoursesData =
     await networkCall.UserCoursesListCall(token, userId);
     if (userCoursesData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success2';
       courseList = userCoursesData;
-      //count = courseList.length.toString();
-      //print('data_count1 ' + courseList.first.toString());
-      //showToastMessage(message);
-      //CommonOperation.hideProgressDialog(context);
-      setState(() {
-        getCoursesGrade(token);
-      });
+      setState(() {});
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
@@ -248,16 +225,12 @@ class InitState extends State<HomeComponents> {
     //CommonOperation.showProgressDialog(context, "loading", true);
     final gradeListData = await networkCall.GradesCountCall(token);
     if (gradeListData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success2';
-      //showToastMessage(message);
-      //CommonOperation.hideProgressDialog(context);
       gradeList = gradeListData.grades!;
-      //print('-----> ' + gradeList.first.courseid.toString());
       setState(() {
-        getEventsData(token);
+
       });
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
@@ -268,22 +241,16 @@ class InitState extends State<HomeComponents> {
     final calenderEventsData =
     await networkCall.CalendarEventsCall(token);
     if (calenderEventsData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
       eventList = calenderEventsData.events!;
       firstUpcomingEvent = eventList.length>0?eventList.first.name.toString():'';
       firstUpcomingEventDate =  eventList.length>0?eventList.first.timestart.toString():'';
       for(int i =0; i<eventList.length;i++){
-        var dateListIndex = DateTime.parse(getDateStump(eventList[i].timesort.toString())).toString();
+        var dateListIndex = DateTime.parse(getDateStump(eventList[i].timesort.toString())).toString().split(" ")[0];
         dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(eventList[i].timesort) : dateList[dateListIndex] = [eventList[i].timesort];
       }
       print('date list '+ dateList.toString());
-      CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {
-        //getMonthlyEventsData(token, _focusedDay.year.toString(),_focusedDay.month.toString());
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => QuizDetailsPage(widget.name, widget.quizId, startAttemptData.attempt!.id.toString())));
-      });
+      setState(() {});
+
     } else {
       CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -291,38 +258,39 @@ class InitState extends State<HomeComponents> {
       showToastMessage('your session is expire ');
     }
   }
-  Future<void> getMonthlyEventsData(String token, String year, String month) async{
-    //CommonOperation.showProgressDialog(context, "loading", true);
-    final monthlyCalenderEventsData =
-    await networkCall.MonthlyCalendarEventsCall(token, year, month);
-    if (monthlyCalenderEventsData != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-      weekList = monthlyCalenderEventsData.weeks!;
-      // for(int i =0;i<weekList.length; i++){
-      //   daysList = monthlyCalenderEventsData.weeks![i].days!;
-      //   for(int j=0; j<daysList.length;j++){
-      //     monthlyEventList = monthlyCalenderEventsData.weeks![i].days![j].events!;
-      //     for(int k=0;k<monthlyEventList.length;k++){
-      //       var dateListIndex = DateTime.parse(getDateStump( monthlyCalenderEventsData.weeks![i].days![j].events![k].timesort.toString())).toString();
-      //       dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(monthlyCalenderEventsData.weeks![i].days![j].events![k]) : dateList[dateListIndex] = [monthlyCalenderEventsData.weeks![i].days![j].events![k]];
-      //     }
-      //   }
-      // }
-      print('date list '+ dateList.toString());
-      //CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {
 
-      });
-    } else {
-      CommonOperation.hideProgressDialog(context);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoged', false);
-      showToastMessage('your session is expire ');
-    }
-
-  }
+  // Future<void> getMonthlyEventsData(String token, String year, String month) async{
+  //   //CommonOperation.showProgressDialog(context, "loading", true);
+  //   final monthlyCalenderEventsData =
+  //   await networkCall.MonthlyCalendarEventsCall(token, year, month);
+  //   if (monthlyCalenderEventsData != null) {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String message = 'Success';
+  //     weekList = monthlyCalenderEventsData.weeks!;
+  //     // for(int i =0;i<weekList.length; i++){
+  //     //   daysList = monthlyCalenderEventsData.weeks![i].days!;
+  //     //   for(int j=0; j<daysList.length;j++){
+  //     //     monthlyEventList = monthlyCalenderEventsData.weeks![i].days![j].events!;
+  //     //     for(int k=0;k<monthlyEventList.length;k++){
+  //     //       var dateListIndex = DateTime.parse(getDateStump( monthlyCalenderEventsData.weeks![i].days![j].events![k].timesort.toString())).toString();
+  //     //       dateList.containsKey(dateListIndex) ? dateList[dateListIndex].add(monthlyCalenderEventsData.weeks![i].days![j].events![k]) : dateList[dateListIndex] = [monthlyCalenderEventsData.weeks![i].days![j].events![k]];
+  //     //     }
+  //     //   }
+  //     // }
+  //     print('date list '+ dateList.toString());
+  //     //CommonOperation.hideProgressDialog(context);
+  //     //showToastMessage(message);
+  //     setState(() {
+  //
+  //     });
+  //   } else {
+  //     CommonOperation.hideProgressDialog(context);
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('isLoged', false);
+  //     showToastMessage('your session is expire ');
+  //   }
+  //
+  // }
 
   String getDateStump(String sTime) {
     int timeNumber = int.parse(sTime);
@@ -363,7 +331,7 @@ class InitState extends State<HomeComponents> {
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             title:Flexible(child: Align(
               alignment: Alignment.center,
-              child: Text('Network Issue !',style: GoogleFonts.comfortaa(
+              child: Text('Network Issue !',style: GoogleFonts.nanumGothic(
                   fontSize: 12
               )),
             )),
@@ -400,7 +368,7 @@ class InitState extends State<HomeComponents> {
                       color: SecondaryColor,
                     ),
                     child: Center(
-                      child: Text("Try again", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                      child: Text("Try again", style: GoogleFonts.nanumGothic(color: Colors.white, fontWeight: FontWeight.bold),),
                     ),
                   ),
                 ),

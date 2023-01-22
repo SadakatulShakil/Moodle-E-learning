@@ -51,7 +51,7 @@ class InitState extends State<NotificationPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text('Notifications',
-            style: GoogleFonts.comfortaa(
+            style: GoogleFonts.nanumGothic(
                 color: const Color(0xFFFFFFFF),
                 fontWeight: FontWeight.w700,
                 fontSize: 18)),
@@ -106,9 +106,7 @@ class InitState extends State<NotificationPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('TOKEN')!;
     userId = prefs.getString('userId')!;
-    setState(() {
-      getURNotification(token, userId);
-    });
+    Future.wait([getURNotification(token, userId), getRNotification(token, userId)]);
   }
 
   Future getURNotification(String token, String userId) async{
@@ -116,38 +114,26 @@ class InitState extends State<NotificationPage> {
         context, "loading", true);
     final uRNotificationData = await networkCall.UserUnReadNotificationCall(token, userId);
     if(uRNotificationData != null){
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-
       CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
       unReadNotiList = uRNotificationData.messages!;
       allNotification.addAll(unReadNotiList);
       setState(() {
-
-        getRNotification(token, userId);
       });
 
     }else{
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
     }
   }
 
-  void getRNotification(String token, String userId) async{
-    CommonOperation.showProgressDialog(
-        context, "loading", true);
+  Future getRNotification(String token, String userId) async{
     final rNotificationData = await networkCall.UserReadNotificationCall(token, userId);
     if(rNotificationData != null){
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String message = 'Success';
-
-      CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
       readNotiList = rNotificationData.messages!;
+      allNotification.addAll(readNotiList);
       setState(() {
-        allNotification.addAll(readNotiList);
       });
 
     }else{
@@ -175,7 +161,6 @@ class InitState extends State<NotificationPage> {
     }else{
       openNetworkDialog();
       setState(() {
-
       });
     }
   }
@@ -191,7 +176,7 @@ class InitState extends State<NotificationPage> {
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             title:Flexible(child: Align(
               alignment: Alignment.center,
-              child: Text('Network Issue !',style: GoogleFonts.comfortaa(
+              child: Text('Network Issue !',style: GoogleFonts.nanumGothic(
                   fontSize: 12
               )),
             )),
@@ -228,7 +213,7 @@ class InitState extends State<NotificationPage> {
                       color: SecondaryColor,
                     ),
                     child: Center(
-                      child: Text("Try again", style: GoogleFonts.comfortaa(color: Colors.white, fontWeight: FontWeight.bold),),
+                      child: Text("Try again", style: GoogleFonts.nanumGothic(color: Colors.white, fontWeight: FontWeight.bold),),
                     ),
                   ),
                 ),
