@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
@@ -46,7 +47,7 @@ class InitState extends State<CourseDetailsPage> {
   bool isPlaying = false;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
-
+  Connectivity connectivity = Connectivity();
   @override
   void initState() {
     // TODO: implement initState
@@ -165,24 +166,89 @@ class InitState extends State<CourseDetailsPage> {
                         ),
                       ),
                       Expanded(
-                          child: SingleChildScrollView(
-                            controller: scrollController,
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              key: GlobalKey(),
-                              children: [
-                                Container(
-                                    width: ScreenRF.width(context),
-                                    child: list())
-                              ],
-                            ),
-                          )),
+                        child: RefreshIndicator(
+                          onRefresh: checkconnectivity,
+                          child: Container(
+                              width: ScreenRF.width(context),
+                              child: list()),
+                        ),
+                      ),
                     ],
                   )),
             ],
           ),
         ));
+  }
+
+  Future checkconnectivity() async{
+    var connectivityResult = await connectivity.checkConnectivity();
+    if(connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi){
+      getSharedData();
+    }else{
+      openNetworkDialog();
+      setState(() {
+
+      });
+    }
+  }
+
+  openNetworkDialog() {
+    print(',,,,,,,,,,,,,,,,,,,,,');
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            insetPadding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            title:Flexible(child: Align(
+              alignment: Alignment.center,
+              child: Text('Network Issue !',style: GoogleFonts.nanumGothic(
+                  fontSize: 12
+              )),
+            )),
+
+            content: Container(
+              height: MediaQuery.of(context).size.height/5,
+              width: MediaQuery.of(context).size.width/2,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text('Please check your internet connectivity and try again.')
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              InkWell(
+                onTap: (){
+                  Navigator.pop(context);
+                  checkconnectivity();
+                  setState(() {
+
+                  });
+                },
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    width:150,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: SecondaryColor,
+                    ),
+                    child: Center(
+                      child: Text("Try again", style: GoogleFonts.nanumGothic(color: Colors.white, fontWeight: FontWeight.bold),),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   String getDateStump(String sTime) {
@@ -193,12 +259,10 @@ class InitState extends State<CourseDetailsPage> {
   void getSharedData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('TOKEN')!;
-    setState(() {
-      getCourseContent(token, widget.mCourseData.id.toString());
-    });
+    Future.wait([getCourseContent(token, widget.mCourseData.id.toString()),]);
   }
 
-  void getCourseContent(String token, String courseId) async {
+  Future getCourseContent(String token, String courseId) async {
     CommonOperation.showProgressDialog(context, "loading", true);
     final userCourseContentData =
     await networkCall.CourseContentCall(token, courseId);
@@ -208,9 +272,11 @@ class InitState extends State<CourseDetailsPage> {
       courseContentList = userCourseContentData;
       print('data_content ' + courseContentList.first.name.toString());
       CommonOperation.hideProgressDialog(context);
-      //showToastMessage(message);
-      setState(() {});
+      setState(() {
+
+      });
     } else {
+      CommonOperation.hideProgressDialog(context);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);
       showToastMessage('your session is expire ');
@@ -297,21 +363,15 @@ class InitState extends State<CourseDetailsPage> {
                               ? Row(
                             children: [
                               Expanded(
-                                  child: SingleChildScrollView(
-                                    controller: scrollController,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    scrollDirection: Axis.horizontal,
-                                    child: Column(
-                                      key: GlobalKey(),
-                                      children: [
-                                        SizedBox(
-                                          height: 30,
-                                        ),
-                                        Container(
-                                            width: ScreenRF.width(context),
-                                            child: sublist(index))
-                                      ],
-                                    ),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      Container(
+                                          width: ScreenRF.width(context),
+                                          child: sublist(index))
+                                    ],
                                   ))
                             ],
                           )
@@ -322,18 +382,17 @@ class InitState extends State<CourseDetailsPage> {
                   ],
                 ),
               ),
-              onTap: () {
-                setState(() {
-                  if (showSub == index) {
-                    showSub = -1;
-                    showContact = -1;
-                    showMap = -1;
-                  } else {
-                    showSub = index;
-                    showContact = -1;
-                    showMap = -1;
-                  }
-                });
+              onTap: () {if (showSub == index) {
+                showSub = -1;
+                showContact = -1;
+                showMap = -1;
+              } else {
+                showSub = index;
+                showContact = -1;
+                showMap = -1;
+              }
+
+                setState(() {});
               });
         });
   }
@@ -521,21 +580,15 @@ class InitState extends State<CourseDetailsPage> {
                             ? Row(
                           children: [
                             Expanded(
-                                child: SingleChildScrollView(
-                                  controller: scrollController,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  child: Column(
-                                    key: GlobalKey(),
-                                    children: [
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      Container(
-                                          width: ScreenRF.width(context),
-                                          child: sublist2(sub_index, index))
-                                    ],
-                                  ),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Container(
+                                        width: ScreenRF.width(context),
+                                        child: sublist2(sub_index, index))
+                                  ],
                                 ))
                           ],
                         )
@@ -634,17 +687,16 @@ class InitState extends State<CourseDetailsPage> {
                 ),
                 onTap: () {
                   //on tap task
-                  setState(() {
-                    if (showContact == index) {
-                      showContact = -1;
-                      showMap = -1;
-                    } else {
-                      showContact = index;
-                      showMap = -1;
-                    }
+                  if (showContact == index) {
+                    showContact = -1;
+                    showMap = -1;
+                  } else {
+                    showContact = index;
+                    showMap = -1;
+                  }
 
-                    // sublist2(sub_index, index);
-                  });
+                  // sublist2(sub_index, index);
+                  setState(() {});
                 }),
           );
         });
@@ -834,19 +886,6 @@ class InitState extends State<CourseDetailsPage> {
               height: 80,
               child: Column(
                 children: [
-                  // Slider(
-                  //   min: 0,
-                  //   max: duration.inSeconds.toDouble(),
-                  //   value: position.inSeconds.toDouble(),
-                  //   onChanged: (value) async {},
-                  // ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     Text('0.00'),
-                  //     Text('3.00'),
-                  //   ],
-                  // ),
                   InkWell(
                       onTap: () async {
                         //isPlaying = true;
@@ -860,10 +899,7 @@ class InitState extends State<CourseDetailsPage> {
                           //await audioPlayer.resume();
                           //await audioPlayer.setSourceUrl(url);
                         }
-                        setState(() {
-                          print('checkIsPlaying ' + isPlaying.toString());
-                          //setAudio();
-                        });
+                        setState(() {});
                       },
                       child: Icon(
                         isPlaying ? Icons.pause_circle : Icons.play_circle,
@@ -913,13 +949,7 @@ class InitState extends State<CourseDetailsPage> {
 
             content: Container(
               height: MediaQuery.of(context).size.height/2,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(description.toString())
-                  ],
-                ),
-              ),
+              child: Text(description.toString()),
             ),
           );
         });
@@ -953,13 +983,7 @@ class InitState extends State<CourseDetailsPage> {
 
             content: Container(
               height: MediaQuery.of(context).size.height/2,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Html(data: description.toString())
-                  ],
-                ),
-              ),
+              child: Html(data: description.toString()),
             ),
           );
         });
@@ -977,14 +1001,13 @@ class InitState extends State<CourseDetailsPage> {
       var mainUrl = document
           .getElementsByClassName('mediafallbacklink')[0].attributes["href"].toString();
       String vidUrl = mainUrl; //|| 'https://www.youtube.com/watch?v=1gDhl4leEzA&t=2s';
-
+      activityView(pageid);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  VideoContentStanding(vidUrl, name)));
       setState(() {
-        activityView(pageid);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    VideoContentStanding(vidUrl, name)));
       });
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -998,9 +1021,6 @@ class InitState extends State<CourseDetailsPage> {
     await networkCall.activityViewCall(token, pageid);
     if (activityViewData != null) {
       print("View succesfully");
-      setState(() {
-
-      });
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoged', false);

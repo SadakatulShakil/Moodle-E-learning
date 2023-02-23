@@ -19,6 +19,7 @@ class WebViewPage extends StatefulWidget {
 class _WebViewPageState extends State<WebViewPage> {
   bool isLoading = true;
   late WebViewController _controller;
+  late FutureBuilder<WebViewController> _controller1;
 
   @override
   void initState() {
@@ -54,13 +55,27 @@ class _WebViewPageState extends State<WebViewPage> {
 
             },
             onPageFinished: (finish) {
+
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('inner_page_breadcrumb ccn_breadcrumb_default  ccn-clip-lx2  ccn-caps-capitalize  ccn-breadcrumb-title-v  ccn-breadcrumb-trail-v ')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('mobile-menu')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('footer_one  ')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('footer_middle_area p0  ')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('footer_bottom_area pt25 pb25  ')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('mt-3')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('tdu btn-fpswd float-right')[0].style.display='none'");
+              _controller.runJavascriptReturningResult("document.getElementsByClassName('mt-5 mb-5 activity-navigation')[0].style.display='none'");
+              isLoading = false;
               setState(() {
-                _controller.evaluateJavascript("document.getElementByTagName('header')[0].style.display='none'");
-                _controller.evaluateJavascript("document.getElementByTagName('footer')[0].style.display='none'");
-                isLoading = false;
               });
             },
           ),
+          Container(
+            color: PrimaryColor,
+            width: MediaQuery.of(context).size.width,
+            height: 100,
+              child: Align(
+                alignment: Alignment.center,
+                  child: Text('To verify content \n Login your account again', style: GoogleFonts.nunito(fontSize: 25, color:Colors.white, fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
           isLoading ? Center( child: CircularProgressIndicator(),)
               : Stack(),
         ],
